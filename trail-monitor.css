@@ -1,0 +1,224 @@
+/** Style Sheet
+ * @Package: 		com.vsoft.trailmonitor
+ * @File			trail-monitor.css
+ * @Author			VSoft Solutions
+ * @Link			https://hiking.princegeorge.tech/software/trail-monitor-wordpress-plugin/
+ * @copyright		(c) 2025, VSoft Solutions
+ * @created			22/04/2025
+*/
+
+/*** General ***/
+.vstm_success, .vstm_error, .vstm_warning, .vstm_message {
+	display: block;
+	margin: 12px -10px;
+	padding: 7px 35px;
+	color: #111111;
+	font-weight: bold;
+}
+.vstm_success {
+	background-color: #55ee55;
+	border-bottom: solid 2px #007700;
+}
+.vstm_error {
+	background-color: #ee5555;
+	border-bottom: solid 2px #770000;
+}
+.vstm_warning {
+	background-color: #eeee55;
+	border-bottom: solid 2px #777700;
+}
+.vstm_message {
+	background-color: #5555ee;
+	border-bottom: solid 2px #000077;
+	color: #f6f6f6;
+}
+
+.vstm_box_shadow {
+	box-shadow: 3px 3px 3px #777;
+}
+
+/*** Shortcodes ***/
+table.vstm_sc {
+	width: auto;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+.vstm_sc td {
+	border: none;
+}
+tr.vstm_sc_trail {
+	margin: 0;
+	padding: 10px 7px 0px 7px;
+}
+.vstm_sc_title {
+	padding: 0 5px 0;
+	text-align: right;
+	font-weight: bold;
+}
+.vstm_sc_status {
+	font-weight: bold;
+}
+
+.vstm_sc_trail_img {
+	width: 150px;
+	margin-bottom: 7px;
+	text-align: center;
+}
+.vstm_sc_trail_img img {
+	width: 100%;
+	padding: 0;
+}
+.vstm_sc_sm_trail_img {
+	width: 50px;
+	text-align: center;
+}
+.vstm_sc_sm_trail_img img {
+	width: 100%;
+	padding: 0;
+}
+
+.vstm_scb {
+	display: inline-block;
+	vertical-align: top;
+	margin: 7px 12px;
+	padding: 7px;
+	text-align: center;
+	font-weight: bold;
+}
+.vstm_scb .vstm_sc_trail_img {
+	margin-bottom: 7px;
+}
+
+/*** Admin ***/
+.vstm_adminmain {
+	display: inline-block;
+	vertical-align: top;
+}
+.vstm_about {
+	position: sticky;
+	float: right;
+	max-width: 250px;
+	padding: 9px 17px 9px 31px;
+}
+@media screen and (max-width: 800px) {
+	.vstm_about {	
+		position: inherit;
+		float: none;
+		display: block;
+		padding: 9px 12px;
+	}
+}
+
+.vstm_trail_name {
+	display: inline-block;
+	vertical-align: bottom;
+	width: 120px;
+	padding: 3px 9px;
+	text-align: right;
+	font-weight: bold;
+	overflow: hidden;
+}
+
+.vstm_trail_status_l {
+	display: inline-block;
+	min-width: 70px;
+}
+.vstm_list tbody tr:hover {
+	background: #ddd;
+}
+
+.vstm_list tbody img {
+	width: 50px;
+	height: 50px;
+	box-shadow: 2px 2px 2px #777;
+}
+
+/***** Forms *****/
+.vstm_form1 label {
+	display: inline-block;
+	vertical-align: top;
+	width: 150px;
+	padding: 0 6px;
+	text-align: right;
+	font-weight: bold;
+}
+.vstm_form1 input[type=text], .vstm_form1 input[type=email], .vstm_form1 input[type=phone], .vstm_form1 input[type=password], .vstm_form1 select {
+	width: 300px;
+	padding: 3px 5px;
+	border-radius: 3px;
+	background: #ddd;
+}
+.vstm_form1 textarea {
+	width: 475px;
+	height: 200px;
+	padding: 3px 5px;
+	border-radius: 3px;
+	background: #ddd;
+}
+.vstm_radio_left {
+	width: auto;
+	padding: 0 0 0 17px;
+	font-weight: normal;
+}
+.vstm_radio_right {
+	width: auto;
+	padding: 0 0 0 17px;
+	font-weight: normal;
+}
+
+.vstm_intable_button {
+	margin: 0 12px;
+}
+
+[id*='vstm_inline_edit'] {
+	display: none;
+}
+
+.vstm_widget_form input[type=text] {
+	width: 100%;
+}
+
+/*** Datatables ***/
+.vstm_table1 {
+	margin: 7px 10px 12px;
+	border-collapse: collapse;
+}
+
+.vstm_table1 thead {
+	background-color: #4c4c4c;
+	background: linear-gradient(to bottom,  #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#000000 51%,#111111 60%,#2b2b2b 76%,#1c1c1c 91%,#131313 100%);
+	text-align: center;
+	color: #eee;
+}
+.vstm_table1 th {
+	padding: 6px 12px;
+}
+.vstm_table1 th a {
+	color: #fff;
+}
+
+.vstm_table1 td {
+	margin: 0;
+	padding: 5px 12px;
+	text-align: center;
+}
+.vstm_table1 .even {
+	background-color: #aaa;
+}
+.vstm_table1 .odd {
+	background-color: #ddd;
+}
+.vstm_table1 .odd:hover, .table1 .even:hover {
+	background: #fff;
+}
+.dataTables_filter {
+	margin-bottom: 7px;	
+}
+.dataTables_filter input {
+	background-color: white !important;
+}
+.dataTables_length select {
+	min-width: 75px;
+	background-color: white !important;
+}
