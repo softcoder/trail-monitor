@@ -24,6 +24,8 @@ if ( isset( $vtsm_dir ) ) {
 }
 $vtsm_dir = dirname( __FILE__ );
 
+define('VSTM_VER', 1.1);
+
 // ****** Table Names *****
 global $wpdb;
 $table_trails = $wpdb->prefix . 'vstm_trails';
@@ -163,17 +165,19 @@ function vstm_install () {
 		}
 	}
 	
-	// ***** Add Set of Statuses to Start With *****
-	$sql_count = "SELECT COUNT(status_id) FROM $table_statuses";
-	$status_count = $wpdb->get_var($sql_count);
+	// ***** Add Set of Statuses to Start With *****	
+	$status_count = $wpdb->get_var($wpdb->prepare(
+		"SELECT COUNT(status_id) FROM %s",
+		$table_statuses)
+	);
 	if (0 == $status_count) {
-		$wpdb->query("INSERT INTO $table_statuses SET status_id = 1, name = 'Unknown', sort_order = 1;");
-		$wpdb->query("INSERT INTO $table_statuses SET status_id = 5, name = 'Dry', sort_order = 5;");
-		$wpdb->query("INSERT INTO $table_statuses SET status_id = 7, name = 'Variable', sort_order=7;");
-		$wpdb->query("INSERT INTO $table_statuses SET status_id = 9, name = 'Wet', sort_order=9;");
-		$wpdb->query("INSERT INTO $table_statuses SET status_id = 11, name = 'Muddy', sort_order=11;");
-		$wpdb->query("INSERT INTO $table_statuses SET status_id = 13, name = 'Snow', sort_order=13;");
-		$wpdb->query("INSERT INTO $table_statuses SET status_id = 15, name = 'Snowshoe Packed', sort_order=15;");
-		$wpdb->query("INSERT INTO $table_statuses SET status_id = 17, name = 'Icy', sort_order=``;");
+		$wpdb->query($wpdb->prepare("INSERT INTO %s SET status_id = 1, name = 'Unknown', sort_order = 1;",$table_statuses));
+		$wpdb->query($wpdb->prepare("INSERT INTO %s SET status_id = 5, name = 'Dry', sort_order = 5;",$table_statuses));
+		$wpdb->query($wpdb->prepare("INSERT INTO %s SET status_id = 7, name = 'Variable', sort_order=7;",$table_statuses));
+		$wpdb->query($wpdb->prepare("INSERT INTO %s SET status_id = 9, name = 'Wet', sort_order=9;",$table_statuses));
+		$wpdb->query($wpdb->prepare("INSERT INTO %s SET status_id = 11, name = 'Muddy', sort_order=11;",$table_statuses));
+		$wpdb->query($wpdb->prepare("INSERT INTO %s SET status_id = 13, name = 'Snow', sort_order=13;",$table_statuses));
+		$wpdb->query($wpdb->prepare("INSERT INTO %s SET status_id = 15, name = 'Snowshoe Packed', sort_order=15;",$table_statuses));
+		$wpdb->query($wpdb->prepare("INSERT INTO %s SET status_id = 17, name = 'Icy', sort_order=``;",$table_statuses));
 	}
 }

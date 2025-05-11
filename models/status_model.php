@@ -17,9 +17,10 @@ class vstm_Status_Model {
 	function get_list () {
 		global $wpdb, $table_statuses;
 
-		$sql = "SELECT * FROM $table_statuses";
-
-		return stripslashes_deep($wpdb->get_results($sql, ARRAY_A));
+		return stripslashes_deep($wpdb->get_results($wpdb->prepare(
+			"SELECT * FROM %1s",
+			$table_statuses
+		), ARRAY_A));
 	}	
 
 	/** Adds a status

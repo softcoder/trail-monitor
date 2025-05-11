@@ -10,7 +10,7 @@
 
 if ( ! function_exists( 'vtsm_show_multiple_version_notice' ) ) {
 	function vtsm_show_multiple_version_notice() {
-		echo '<div class="error"><p>' . __( 'Multiple versions of Trail Monitor are active. Please disable all extra versions of Trail Monitor.', 'trail-monitor' ) . '</p></div>';
+		echo '<div class="error"><p>' . esc_html(__( 'Multiple versions of Trail Monitor are active. Please disable all extra versions of Trail Monitor.','vstm-trail-monitor' )) . '</p></div>';
 	}
 
 	add_action( 'all_admin_notices', 'vtsm_show_multiple_version_notice' );

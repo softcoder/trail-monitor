@@ -21,7 +21,7 @@ function sendNotification($msg, $subject, $daily_check_option=null) {
 	$email_recipient = isset( $options[ 'vstm_notifications_email_send_to' ] ) ? $options[ 'vstm_notifications_email_send_to' ] : '';
 	if( !empty($email_recipient)) {
 
-        $todays_date = date("Y-M-d");
+        $todays_date = gmdate("Y-M-d");
         $notify_last_sent = ($daily_check_option != null ? get_option( $daily_check_option ) : false);
         if($notify_last_sent === false || $notify_last_sent != $todays_date) {
             $headers = array(

@@ -21,7 +21,7 @@ function vstm_trail_list_approval_page () {
 function vstm_trail_list_page ($show_unapproved_only=false) {
 	// ***** Security Check *****
 	if (!current_user_can('publish_pages')) {
-		wp_die(__('You do not have sufficient permissions to access this page.'));
+		wp_die(esc_html(__('You do not have sufficient permissions to access this page.','vstm-trail-monitor')));
 	}
 
 	// ***** Load Models, Helpers and Libraries *****
@@ -120,7 +120,7 @@ function vstm_trail_list_page ($show_unapproved_only=false) {
 function vstm_trail_edit_page () {
 	// ***** Security Check *****
 	if (!current_user_can('publish_pages')) {
-		wp_die(__('You do not have sufficient permissions to access this page.'));
+		wp_die(esc_html(__('You do not have sufficient permissions to access this page.','vstm-trail-monitor')));
 	}
 
 	// ***** Load Models, Helpers and Libraries *****
@@ -186,7 +186,8 @@ function vstm_trail_edit_page () {
 
 		// * Comment: Sanitize
 		if (!empty($_POST['comment'])) {
-			$comment = filter_var(wp_unslash(trim($_POST['comment']), FILTER_SANITIZE_STRING));
+			//$comment = filter_var(wp_unslash(trim($_POST['comment']), FILTER_SANITIZE_STRING));
+			$comment = wp_kses_post($_POST['comment']);
 			
 		} else {
 			$comment = null;
@@ -261,7 +262,7 @@ function vstm_trail_edit_page () {
 function vstm_status_list_page () {
 	// ***** Security Check *****
 	if (!current_user_can('publish_pages')) {
-		wp_die(__('You do not have sufficient permissions to access this page.'));
+		wp_die(esc_html(__('You do not have sufficient permissions to access this page.','vstm-trail-monitor')));
 	}
 
 	// ***** Load Models, Helpers and Libraries *****
@@ -330,7 +331,7 @@ function vstm_status_list_page () {
 function vstm_update_status () {	
 	// ***** Security Check *****
 	if (!current_user_can('publish_pages')) {
-		wp_die(__('You do not have sufficient permissions to access this page.'));
+		wp_die(esc_html(__('You do not have sufficient permissions to access this page.','vstm-trail-monitor')));
 	}
 	check_ajax_referer('status_bulk', 'wp_nonce');
 
@@ -365,7 +366,7 @@ function vstm_update_status () {
 function vstm_update () {
 	// ***** Security Check *****
 	if (!current_user_can('publish_posts')) {
-		wp_die(__('You do not have sufficient permissions to access this page.'));
+		wp_die(esc_html(__('You do not have sufficient permissions to access this page.','vstm-trail-monitor')));
 	}
 
 	// ***** Load Models, Helpers and Libraries *****

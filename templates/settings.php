@@ -14,19 +14,31 @@
  * these functions could be run multiple times; this would result in a fatal error.
  */
 
+ function vstm_sanitize_options($options) {
+    foreach ($options as $key => &$value) {
+        $value = wp_kses_post($value);
+    }
+    return $options;
+ }
+
 /**
  * custom option and settings
  */
 function vstm_settings_init() {
 	// Register a new setting for "vstm" page.
-	register_setting( 'vstm', 'vstm_options' );
+	register_setting( 'vstm', 'vstm_options',
+        array(
+            'type'              => 'string',
+            'sanitize_callback' => 'vstm_sanitize_options', // Ensure function exists before this call
+        )
+    );
 
 	// Register a new section in the "vstm" page.
-	add_settings_section('vstm_section_settings', __( 'Settings', 'Trail Monitor' ), 'vstm_section_settings_callback','vstm');
+	add_settings_section('vstm_section_settings', __( 'Settings','vstm-trail-monitor' ), 'vstm_section_settings_callback','vstm');
 
 	// Register a new field in the "vstm_section_settings" section, inside the "vstm" page.
 	add_settings_field('vstm_field_post_category',
-		__( 'Hiking Post Category', 'Trail Monitor' ),
+		__( 'Hiking Post Category','vstm-trail-monitor' ),
 		'vstm_field_post_category_cb', 'vstm', 'vstm_section_settings',
 		array(
 			'label_for'        => 'vstm_field_post_category',
@@ -36,7 +48,7 @@ function vstm_settings_init() {
 	);
     
 	add_settings_field('vstm_google_recaptcha_api_key',
-		__( 'Google Recaptcha Site API Key', 'Trail Monitor' ),
+		__( 'Google Recaptcha Site API Key','vstm-trail-monitor' ),
 		'vstm_field_google_recaptcha_api_key_cb', 'vstm', 'vstm_section_settings',
 		array(
 			'label_for'        => 'vstm_google_recaptcha_api_key',
@@ -46,7 +58,7 @@ function vstm_settings_init() {
 	);
 
 	add_settings_field('vstm_google_recaptcha_api_secret_key',
-		__( 'Google Recaptcha Secret API Key', 'Trail Monitor' ),
+		__( 'Google Recaptcha Secret API Key','vstm-trail-monitor' ),
 		'vstm_field_google_recaptcha_api_secret_key_cb', 'vstm', 'vstm_section_settings',
 		array(
 			'label_for'        => 'vstm_google_recaptcha_api_secret_key',
@@ -56,7 +68,7 @@ function vstm_settings_init() {
 	);
 
 	add_settings_field('vstm_notifications_email_send_from',
-		__( 'Send Notifications FROM Email Address', 'Trail Monitor' ),
+		__( 'Send Notifications FROM Email Address','vstm-trail-monitor' ),
 		'vstm_field_notifications_email_send_from_cb', 'vstm', 'vstm_section_settings',
 		array(
 			'label_for'        => 'vstm_notifications_email_send_from',
@@ -66,7 +78,7 @@ function vstm_settings_init() {
 	);
 
 	add_settings_field('vstm_notifications_email_send_to',
-		__( 'Send Notifications to Email Address', 'Trail Monitor' ),
+		__( 'Send Notifications to Email Address','vstm-trail-monitor' ),
 		'vstm_field_notifications_email_send_to_cb', 'vstm', 'vstm_section_settings',
 		array(
 			'label_for'        => 'vstm_notifications_email_send_to',
@@ -139,11 +151,11 @@ function vstm_field_post_category_cb( $args ) {
 
     foreach( $categories as $category ) { 
 ?>
-        <option value="<?= $category->term_id ?>"
+        <option value="<?php echo esc_html($category->term_id) ?>"
 <?php   if ($category->term_id == $selected_category_id) { ?>
 		    selected="selected"
 <?php	} ?>					
-        ><?= $category->name ?>
+        ><?php echo esc_html($category->name) ?>
         </option>
 <?php }	?>
     </select>
@@ -158,7 +170,7 @@ function vstm_field_google_recaptcha_api_key_cb( $args ) {
         <input type="text" id="<?php echo esc_attr( $args['label_for'] ); ?>"
                 data-custom="<?php echo esc_attr( $args['vstm_custom_data'] ); ?>"
                 name="vstm_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
-                value="<?= $google_recaptcha_api_key ?>">
+                value="<?php echo esc_html($google_recaptcha_api_key) ?>">
     <?php
 }
 
@@ -170,7 +182,7 @@ function vstm_field_google_recaptcha_api_secret_key_cb( $args ) {
     <input type="text" id="<?php echo esc_attr( $args['label_for'] ); ?>"
             data-custom="<?php echo esc_attr( $args['vstm_custom_data'] ); ?>"
             name="vstm_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
-            value="<?= $google_recaptcha_api_secret_key ?>">
+            value="<?php echo esc_html($google_recaptcha_api_secret_key) ?>">
 <?php
 }
 
@@ -182,7 +194,7 @@ function vstm_field_notifications_email_send_from_cb( $args ) {
     <input type="text" id="<?php echo esc_attr( $args['label_for'] ); ?>"
             data-custom="<?php echo esc_attr( $args['vstm_custom_data'] ); ?>"
             name="vstm_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
-            value="<?= $notifications_email_send_from ?>"><br>
+            value="<?php echo esc_html($notifications_email_send_from) ?>"><br>
     <label>Trail Monitor will send notifications from this email address. Leave blank to use the WordPress default.</label>
 <?php
 }
@@ -195,7 +207,7 @@ function vstm_field_notifications_email_send_to_cb( $args ) {
     <input type="text" id="<?php echo esc_attr( $args['label_for'] ); ?>"
             data-custom="<?php echo esc_attr( $args['vstm_custom_data'] ); ?>"
             name="vstm_options[<?php echo esc_attr( $args['label_for'] ); ?>]" 
-            value="<?= $notifications_email_send_to ?>">
+            value="<?php echo esc_html($notifications_email_send_to) ?>">
 <?php
 }
 
@@ -226,7 +238,7 @@ function vstm_options_page_html() {
 	// WordPress will add the "settings-updated" $_GET parameter to the url
 	if ( isset( $_GET['settings-updated'] ) ) {
 		// add settings saved message with the class of "updated"
-		add_settings_error( 'vstm_messages', 'vstm_message', __( 'Settings Saved', 'vstm' ), 'updated' );
+		add_settings_error( 'vstm_messages', 'vstm_message', __( 'Settings Saved','vstm-trail-monitor' ), 'updated' );
 	}
 
 	// show error/update messages

@@ -35,36 +35,3 @@ function vstm_validate_email ($in) {
 
 	return ['valid' => $valid, 'message' => $message];
 }
-
-/** Verifies a hCaptcha
- * @return boolean
- */
-function vstm_verify_hcaptcha () {
-	$post_data['secret'] = get_option('vstm_hcaptcha_secret_key');
-	if (empty($post_data['secret'])) return true; // hcaptcha is disabled
-	$post_data['response'] = vstm_get_request_string('h-captcha-response');
-
-	$curl = curl_init('https://hcaptcha.com/siteverify');
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_POST, 1);
-	curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
-	$response = curl_exec($curl);
-	$response_data = json_decode($response, true);
-
-	/* ***** For Debugging *****
-	$curl_error = curl_error($curl);
-	if (!empty($curl_error)) {
-		error_log('vstm_verify_hcaptcha Curl Error: ' . print_r($curl_error, true));
-	}
-	$curl_info = curl_getinfo($curl);
-	error_log('vstm_verify_hcaptcha Curl Info: ' . print_r($curl_info, true));
-	error_log('vstm_verify_hcaptcha Response: ' . $response);
-	error_log('vstm_verify_hcaptcha Response Array: ' . print_r($response_data, true));
-	/**/
-
-	if ('true' == $response_data['success']) {
-		return true;
-	} else {
-		return false;
-	}
-}

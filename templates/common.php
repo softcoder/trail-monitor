@@ -27,7 +27,7 @@ function vstm_load_styles_and_scripts () {
 
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('jquery-ui-checkboxradio');
-	wp_register_style('jquery-ui', '//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css');
+	wp_register_style('jquery-ui', plugins_url('../public/css/jquery-ui.css', __FILE__));
 	wp_enqueue_style('jquery-ui');
 
 	wp_register_style('vstm_datatables_css', plugins_url('../datatables.min.css', __FILE__));
@@ -36,13 +36,13 @@ function vstm_load_styles_and_scripts () {
 		
     if (is_admin()) {    
 	    wp_enqueue_style('wp-color-picker'); 
-        wp_enqueue_script('vstm_script', plugins_url('../admin.js', __FILE__), ['wp-color-picker'], false, true);
+        wp_enqueue_script('vstm_script', plugins_url('../admin.js', __FILE__), ['wp-color-picker'], VSTM_VER, true);
     }
     else {
-        wp_enqueue_style( 'vstm_wp-color-picker-css', admin_url() . 'css/color-picker.css', [], false, true);
-        wp_enqueue_script( 'vstm_wp-color-picker', admin_url() . 'js/color-picker.js', [], false, true);
-        wp_enqueue_style( 'vstm_script_wp_button_styles', includes_url() . 'css/buttons.css', [], false, true);
+        wp_enqueue_style( 'vstm_wp-color-picker-css', admin_url() . 'css/color-picker.css', [], VSTM_VER, true);
+        wp_enqueue_script( 'vstm_wp-color-picker', admin_url() . 'js/color-picker.js', [], VSTM_VER, true);
+        wp_enqueue_style( 'vstm_script_wp_button_styles', includes_url() . 'css/buttons.css', [], VSTM_VER, true);
         
-        wp_enqueue_script('vstm_script', plugins_url('../admin.js', __FILE__), ['vstm_wp-color-picker'], false, true);    
+        wp_enqueue_script('vstm_script', plugins_url('../admin.js', __FILE__), ['vstm_wp-color-picker'], VSTM_VER, true);    
     }
 }

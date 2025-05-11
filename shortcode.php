@@ -110,13 +110,15 @@ function vstm_sc_table_list ($attributes, $content = null) {
 			$output .= '</td>';
 
 			// *** Hike Date ***
-			$output .= '<td>' . date("Y-M-d", strtotime($trail['visitdate'])) . '</td>';
+			$output .= '<td>' . gmdate("Y-M-d", strtotime($trail['visitdate'])) . '</td>';
 
 			// *** Status ***
 			$output .= '<td class="vstm_sc_status">' . htmlspecialchars($trail['status']) . '</td>';
 
 			// *** Comment ***
-			$output .= '<td><p>' . do_shortcode($trail['comment']) . '</p></td>';
+			$output .= '<td><p>' . str_replace(array("\r\n", "\n", "\r"), ' ', nl2br( do_shortcode($trail['comment']))) . '</p></td>';
+
+			
 
 			// *** Submitter ***
 			$output .= '<td>' . htmlspecialchars($trail['submitter_name']) . '</td>';
@@ -320,18 +322,12 @@ function vstm_sc_submit ($attributes, $content = null) {
 		$trail_id = null;
 		if (empty($trail_id)) { 
 			//check_admin_referer('trail_add');
-			if ( !wp_verify_nonce( $_POST['_wpnonce'], 'trail_add' ) ) {
-				die( __( 'Security check', 'textdomain' ) ); 
+			if ( !wp_verify_nonce( wp_kses_post(wp_unslash($_POST['_wpnonce'], FILTER_SANITIZE_STRING)), 'trail_add' ) ) {
+				wp_die( esc_html(__( 'Security check', 'vstm-trail-monitor' )) ); 
 			}
 		} 
-		//else {
-			//check_admin_referer('trail_edit_' . $trail_id);
-		//	if ( !wp_verify_nonce( $_POST['_wpnonce'], 'trail_edit_' . $trail_id ) ) {
-		//		die( __( 'Security check', 'textdomain' ) ); 
-		//	}
-		//}
 		
-		// * Name Is Required *
+		// * Name Is Required */
 		$name = vstm_get_request_string('trail_name');
 		if (empty($name)) {
 			$message_list[] = ['Name is Required', 3, 3];
@@ -366,7 +362,7 @@ function vstm_sc_submit ($attributes, $content = null) {
 
 		// * Link: Sanitize and Add http:// if Missing *
 		if (!empty($_POST['link'])) {
-			$link = $_POST['link'];			
+			$link = wp_kses_post(wp_unslash($_POST['link'], FILTER_SANITIZE_STRING));
 			if (0 != strncasecmp($link, "http://", 7) && 0 != strncasecmp($link, "https://", 8))
 				$link = 'http://' . $link;
 			$link = filter_var($link, FILTER_SANITIZE_URL);
@@ -376,7 +372,7 @@ function vstm_sc_submit ($attributes, $content = null) {
 
 		// * Comment: Sanitize
 		if (!empty($_POST['comment'])) {
-			$comment = filter_var(wp_unslash(trim($_POST['comment']), FILTER_SANITIZE_STRING));
+			$comment = filter_var(wp_unslash($_POST['comment'], FILTER_SANITIZE_STRING));
 			
 		} else {
 			$comment = null;
@@ -464,6 +460,12 @@ function getImagefromRequest() {
 	$html_form_image_control_id = 'image_id';
 	$html_form_image_file_upload_control_id = 'image_upload';
 
+	if(isset($_POST['_wpnonce'])) {
+		if ( !wp_verify_nonce( wp_kses_post(wp_unslash($_POST['_wpnonce'], FILTER_SANITIZE_STRING)), 'trail_add' ) ) {
+			wp_die( esc_html(__( 'Security check image upload', 'vstm-trail-monitor' )) ); 
+		}
+	}
+
 	$image_id = vstm_get_request_int($html_form_image_control_id);
 	if($image_id <= 0 && isset( $_FILES[ $html_form_image_file_upload_control_id ] )) {
 		// WordPress environmet
@@ -472,7 +474,7 @@ function getImagefromRequest() {
 		// it allows us to use wp_handle_upload() function
 		require_once( ABSPATH . 'wp-admin/includes/file.php' );
 
-		$error = $_FILES[$html_form_image_file_upload_control_id]['error'];
+		$error = (isset($_FILES[$html_form_image_file_upload_control_id]['error']) ? wp_kses_post($_FILES[$html_form_image_file_upload_control_id]['error']) : UPLOAD_ERR_OK);
 		if ($error != UPLOAD_ERR_OK) {
 			switch ($error) {
 				case UPLOAD_ERR_INI_SIZE:
@@ -508,7 +510,7 @@ function getImagefromRequest() {
 				break;
 			}
 			if($error != UPLOAD_ERR_NO_FILE) {
-				wp_die( "Image upload error (1): ". $error_message );
+				wp_die( esc_html("Image upload error (1): ". $error_message) );
 			}
 		}
 			
@@ -519,7 +521,7 @@ function getImagefromRequest() {
 			);
 			
 			if( ! empty( $upload[ 'error' ] ) ) {
-				wp_die( "Image upload error (2): ". $upload[ 'error' ] );
+				wp_die( esc_html("Image upload error (2): ". $upload[ 'error' ]) );
 			}
 			
 			// it is time to add our uploaded image into WordPress media library
@@ -536,7 +538,7 @@ function getImagefromRequest() {
 			);
 			
 			if( is_wp_error( $attachment_id ) || ! $attachment_id ) {
-				wp_die( 'Upload attachment error: ' . $attachment_id );
+				wp_die( esc_html('Upload attachment error: ' . $attachment_id) );
 			}
 			
 			// update medatata, regenerate image sizes
@@ -559,19 +561,27 @@ function vstm_verify_recaptcha() {
 	$secret_key = isset( $options[ 'vstm_google_recaptcha_api_secret_key' ] ) ? $options[ 'vstm_google_recaptcha_api_secret_key' ] : '';
 
 	if( !empty($secret_key)) {
+		if(isset($_POST['_wpnonce'])) {
+			if ( !wp_verify_nonce( wp_kses_post(wp_unslash($_POST['_wpnonce'], FILTER_SANITIZE_STRING)), 'trail_add' ) ) {
+				wp_die( esc_html(__( 'Security check recaptcha', 'vstm-trail-monitor' )) ); 
+			}
+		}
+	
 		if (isset($_POST['g-recaptcha-response'])) {
 			$secret = $secret_key;
-			$response = $_POST['g-recaptcha-response'];
-			$remote_ip = $_SERVER['REMOTE_ADDR'];
-
+			$response = wp_kses_post(wp_unslash($_POST['g-recaptcha-response'], FILTER_SANITIZE_STRING));
+			$remote_ip = '';
+			if(isset($_SERVER['REMOTE_ADDR'])) {
+				$remote_ip = wp_kses_post(wp_unslash($_SERVER['REMOTE_ADDR'], FILTER_SANITIZE_STRING));
+			}
 			$request = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$secret}&response={$response}&remoteip={$remote_ip}");
 			$result = json_decode($request);
 
 			if (!$result->success) {
-				wp_die(__('Error (1): Please complete the anti-spam CAPTCHA to submit your information.'));
+				wp_die(esc_html(__('Error (1): Please complete the anti-spam CAPTCHA to submit your information.','vstm-trail-monitor')));
 			}
 		} else {
-			wp_die(__('Error (2): Please complete the anti-spam CAPTCHA to submit your information.'));
+			wp_die(esc_html(__('Error (2): Please complete the anti-spam CAPTCHA to submit your information.','vstm-trail-monitor')));
 		}
 	}
 }

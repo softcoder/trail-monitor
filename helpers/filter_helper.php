@@ -109,7 +109,7 @@ function vstm_filter_string ($in, $allow_new_line=false, $allow_tags=false, $def
 	else
 		$out = trim(filter_var($in, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_HIGH | FILTER_FLAG_STRIP_LOW));
 	if (!$allow_tags)
-		$out = strip_tags($out);
+		$out = wp_strip_all_tags($out);
 
 	if (empty($out))
 		$out = $default;

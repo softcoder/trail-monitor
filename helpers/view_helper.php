@@ -17,12 +17,12 @@ $selected_text = ' selected="selected"';
  */
 function vstm_on_off_select ($name, $default) {
 	$selected_text = ' selected="selected"';
-	echo "<select name='$name'>";
+	echo "<select name='".esc_html($name)."'>";
 	echo '<option value="1"';
-	if (1 == $default) echo $selected_text;
+	if (1 == $default) echo wp_kses_post($selected_text);
 	echo ">On</option>";
 	echo '<option value="0"';
-	if (0 == $default) echo $selected_text;
+	if (0 == $default) echo wp_kses_post($selected_text);
 	echo ">Off</option>";
 	echo "</select>";
 }
@@ -33,12 +33,12 @@ function vstm_on_off_select ($name, $default) {
  */
 function vstm_yes_no_select ($name, $default) {
 	$selected_text = ' selected="selected"';
-	echo "<select name='$name'>";
+	echo "<select name='".esc_html($name)."'>";
 	echo '<option value="1"';
-	if (1 == $default) echo $selected_text;
+	if (1 == $default) echo wp_kses_post($selected_text);
 	echo ">Yes</option>";
 	echo '<option value="0"';
-	if (0 == $default) echo $selected_text;
+	if (0 == $default) echo wp_kses_post($selected_text);
 	echo '>No</option>';
 	echo '</select>';
 }
@@ -52,34 +52,6 @@ function vstm_display_yes_no ($value) {
 		return '<span style="color: green">Yes</span>';
 	else
 		return '<span style="color: red">No</span>';
-}
-
-/** Inserts a 1-20 Select
- * @param type $name
- * @return type
- */
-function vstm_select_input_sort_order ($name) {
-	return '<select id="' . $name . '" name="' . $name . '"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>   <option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option></select>';
-}
-
-/** Builds a Number Select
- * @param string $name
- * @param int $min
- * @param int $max
- * @param int $selected
- * @param string $class
- * @return string
- */
-function vstm_number_select ($name, $min, $max, $selected, $class = '') {
-	$out = '<select id="' . $name . '" name="' . $name . '" class="' . $class . '">';
-	for ($i = $min; $i < $max + 1; $i++) {
-		if ($selected == $i)
-			$out .= "<option value=\"$i\" selected=\"selected\">$i</option>";
-		else
-			$out .= "<option value=\"$i\">$i</option>";
-	}
-	$out .= '</select>';
-	return $out;
 }
 
 /** Takes Messages and Displays Them
@@ -110,6 +82,6 @@ function vstm_display_messages ($message_list) {
 				$class = 'vstm_message';
 		}
 		// ***** Print It *****
-		echo "<p class='$class'>" . $message[0] . '</p>';
+		echo "<p class='".wp_kses_post($class)."'>" . esc_html($message[0]) . '</p>';
 	}
 }

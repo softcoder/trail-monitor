@@ -30,26 +30,27 @@ jQuery(document).ready(function () {
 		$trail_unapproved_count = 0;
 		if (!empty($table_data)) foreach ($table_data as $record) { 
 			$status_name = (array_key_exists($record['status_id'], $status_lookup) ? $status_lookup[$record['status_id']] : '');
-			$comment = str_replace(array("\r\n", "\n", "\r"), ' ', nl2br( $record['comment']));
+			//$comment = str_replace(array("\r\n", "\n", "\r"), ' ', nl2br( $record['comment']));
+			$comment = $record['comment'];
 
 			if($record['hidden']) {
 				$trail_unapproved_count++;
 			}
 ?> 
 		[
-			'<input type="checkbox" name="bulk_action_list[]" value="<?= $record['trail_id'] ?>" class="vstm_list_checkbox">',
-			'<a href="admin.php?page=trail-status-2-edit&trail=<?= $record['trail_id'] ?>" class="row-title"><?= htmlspecialchars($record['name']) ?></a>',
-			'<?php if (!empty($record['visitdate'])) { ?><?= date("Y-m-d", strtotime($record['visitdate'])) ?><?php } ?>',
-			'<?php if (!empty($record['created'])) { ?><?= date("Y-m-d", strtotime($record['created'])) ?><?php } ?>',
-			'<?php if (!empty($record['link'])) { ?><a href="<?= esc_url($record['link']) ?>" target="_blank">Visit Website</a><?php } ?>',
-			'<?php if (!empty($record['comment'])) { ?><p><?= htmlspecialchars($comment) ?></p><?php } ?>',
-			'<?php if (!empty($record['submitter_name'])) { ?><?= htmlspecialchars($record['submitter_name']) ?><?php } ?>',
-			'<?php if (!empty($record['image_id'])) { ?><img src="<?= wp_get_attachment_thumb_url($record['image_id']) ?>" style="width: 33px; height: 33px;"> <?php } ?>',	
-			'<?= htmlspecialchars($status_name) ?>',
-			'<?= vstm_display_yes_no(!$record['hidden']) ?>',
-			'<?= $record['sort_order'] ?>',
-			'<?= vstm_display_yes_no($record['show_widget']) ?>',
-			'<?= vstm_display_yes_no($record['show_shortcode']) ?>'
+			'<input type="checkbox" name="bulk_action_list[]" value="<?php echo esc_html($record['trail_id']) ?>" class="vstm_list_checkbox">',
+			'<a href="admin.php?page=trail-status-2-edit&trail=<?php echo esc_html($record['trail_id']) ?>" class="row-title"><?php echo esc_html($record['name']) ?></a>',
+			'<?php if (!empty($record['visitdate'])) { ?><?php echo esc_html(gmdate("Y-m-d", strtotime($record['visitdate']))) ?><?php } ?>',
+			'<?php if (!empty($record['created'])) { ?><?php echo esc_html(gmdate("Y-m-d", strtotime($record['created']))) ?><?php } ?>',
+			'<?php if (!empty($record['link'])) { ?><a href="<?php echo esc_url($record['link']) ?>" target="_blank">Visit Website</a><?php } ?>',
+			'<?php if (!empty($record['comment'])) { ?><p><?php echo esc_js($comment) ?></p><?php } ?>',
+			'<?php if (!empty($record['submitter_name'])) { ?><?php echo esc_html($record['submitter_name']) ?><?php } ?>',
+			'<?php if (!empty($record['image_id'])) { ?><img src="<?php echo esc_url(wp_get_attachment_thumb_url($record['image_id'])) ?>" style="width: 33px; height: 33px;"> <?php } ?>',	
+			'<?php echo esc_html($status_name) ?>',
+			'<?php echo wp_kses_post(vstm_display_yes_no(!$record['hidden'])) ?>',
+			'<?php echo esc_html($record['sort_order']) ?>',
+			'<?php echo wp_kses_post(vstm_display_yes_no($record['show_widget'])) ?>',
+			'<?php echo wp_kses_post(vstm_display_yes_no($record['show_shortcode'])) ?>'
 		],
 <?php } ?>
 	];
@@ -67,13 +68,13 @@ jQuery(document).ready(function () {
 </script>
 <div class="wrap">
 	<h2>Trail Status | List &nbsp; <a href="admin.php?page=trail-status-2-add" class="add-new-h2">Add New</a> &nbsp; <a href="admin.php?page=trail-status-2-list" class="add-new-h2">Refresh</a></h2>
-	<?= vstm_display_messages($message_list) ?>
+	<?php echo esc_html(vstm_display_messages($message_list)) ?>
 
 	<b>Total trails needing approval: 
 		<?php if($trail_unapproved_count > 0) { ?>
 			<a href="admin.php?page=trail-status-2-approve-list" class="add-new-h2">
 		<?php } ?>
-		<?= $trail_unapproved_count ?>
+		<?php echo esc_html($trail_unapproved_count) ?>
 		<?php if($trail_unapproved_count > 0) { ?>
 			</a>
 		<?php } ?>

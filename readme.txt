@@ -1,11 +1,11 @@
 === Trail Monitor ===
 Contributors: softcoder
 Donate link: https://hiking.princegeorge.tech/software/trail-monitor-wordpress-plugin/
-Tags: trail, trails, outdoors, biking, hiking, widget, shortcode
+Tags: trail, trails, outdoors, hiking, status
 Requires at least: 5.8
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 2.2
+Stable tag: 1.1
 License: GPLv3
 
 Display the status of trails on your website.

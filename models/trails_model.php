@@ -17,10 +17,21 @@ class vstm_Trails_Model {
 	 */
 	function get_list_for_shortcode () {
 		global $wpdb, $table_trails, $table_statuses;
-		$sql = "SELECT trail_id, visitdate, $table_trails.name, link, comment, submitter_name, image_id, $table_statuses.name AS status, $table_statuses.color AS color FROM $table_trails"
-				. " JOIN $table_statuses ON $table_statuses.status_id = $table_trails.status_id"
-				. " WHERE hidden = 0 AND show_shortcode = 1 ORDER BY $table_trails.sort_order ASC, $table_trails.visitdate DESC, $table_trails.name ASC LIMIT 50;";
-		return stripslashes_deep($wpdb->get_results($sql, ARRAY_A));
+		return stripslashes_deep($wpdb->get_results($wpdb->prepare(
+			"SELECT trail_id, visitdate, %1s.name, link, comment, submitter_name, image_id, %1s.name AS status, %1s.color AS color FROM %1s
+				JOIN %1s ON %1s.status_id = %1s.status_id
+				WHERE hidden = 0 AND show_shortcode = 1 ORDER BY %1s.sort_order ASC, %1s.visitdate DESC, %1s.name ASC LIMIT 50;",
+				$table_trails,
+				$table_statuses,
+				$table_statuses,
+				$table_trails,
+				$table_statuses,
+				$table_statuses,
+				$table_trails,
+				$table_trails,
+				$table_trails,
+				$table_trails), 
+				ARRAY_A));
 	}
 
 	/** Returns the list of trails for the shortcode ordered by the order # then name.
@@ -31,10 +42,20 @@ class vstm_Trails_Model {
 	 */
 	function get_list_for_widget () {
 		global $wpdb, $table_trails, $table_statuses;
-		$sql = "SELECT trail_id, visitdate, $table_trails.name, link, comment, submitter_name, $table_statuses.name AS status, $table_statuses.color AS color FROM $table_trails"
-				. " JOIN $table_statuses ON $table_statuses.status_id = $table_trails.status_id"
-				. " WHERE hidden = 0 AND show_widget = 1 ORDER BY $table_trails.sort_order ASC, $table_trails.name ASC LIMIT 50;";
-		return stripslashes_deep($wpdb->get_results($sql, ARRAY_A));
+		return stripslashes_deep($wpdb->get_results($wpdb->prepare(
+			"SELECT trail_id, visitdate, %1s.name, link, comment, submitter_name, %1s.name AS status, %1s.color AS color FROM %1s
+			 JOIN %1s ON %1s.status_id = %1s.status_id
+			 WHERE hidden = 0 AND show_widget = 1 ORDER BY %1s.sort_order ASC, %1s.name ASC LIMIT 50;",
+			$table_trails,
+			$table_statuses,
+			$table_statuses,
+			$table_trails,
+			$table_statuses,
+			$table_statuses,
+			$table_trails,
+			$table_trails,
+			$table_trails
+		), ARRAY_A));
 	}
 
 	/** Gets all the trail names and ids for non-hidden trails
@@ -44,8 +65,9 @@ class vstm_Trails_Model {
 	 */
 	function get_trail_names () {
 		global $wpdb, $table_trails;
-		$sql = "SELECT trail_id, name, status_id FROM $table_trails WHERE hidden = 0";
-		return stripslashes_deep($wpdb->get_results($sql, ARRAY_A));
+		return stripslashes_deep($wpdb->get_results($wpdb->prepare(
+			"SELECT trail_id, name, status_id FROM %1s WHERE hidden = 0",
+			$table_trails), ARRAY_A));
 	}
 
 	/** Gets all the trail names and ids for non-hidden trails
@@ -55,8 +77,9 @@ class vstm_Trails_Model {
 	 */
 	function get_names_list () {
 		global $wpdb, $table_trails;
-		$sql = "SELECT trail_id, name FROM $table_trails";
-		$result = stripslashes_deep($wpdb->get_results($sql, ARRAY_A));
+		$result = stripslashes_deep($wpdb->get_results($wpdb->prepare(
+			"SELECT trail_id, name FROM %1s",
+			$table_trails), ARRAY_A));
 		if (empty($result))
 			return false;
 		foreach ($result as $row) {
@@ -77,12 +100,20 @@ class vstm_Trails_Model {
 		// ***** Build Where Statement *****
 		$where = '';
 		if (1 == $hidden)
-			$where = ' WHERE hidden = 1';
+			return stripslashes_deep($wpdb->get_results($wpdb->prepare(
+				"SELECT * FROM %1s WHERE hidden = 1",
+				$table_trails
+			), ARRAY_A));
 		if (2 == $hidden)
-			$where = ' WHERE hidden = 0';
-
-		$sql = "SELECT * FROM $table_trails " . $where;
-		return stripslashes_deep($wpdb->get_results($sql, ARRAY_A));
+			return stripslashes_deep($wpdb->get_results($wpdb->prepare(
+				"SELECT * FROM %1s WHERE hidden = 0",
+				$table_trails
+			), ARRAY_A));
+		
+		return stripslashes_deep($wpdb->get_results($wpdb->prepare(
+			"SELECT * FROM %1s",
+			$table_trails
+		), ARRAY_A));
 	}
 
 	/** Returns All Fields in a Listing Record
@@ -93,8 +124,11 @@ class vstm_Trails_Model {
 	 */
 	function get ($trail_id) {
 		global $wpdb, $table_trails;
-		$sql = "SELECT * FROM $table_trails WHERE trail_id = " . (int)$trail_id;
-		return stripslashes_deep($wpdb->get_row($sql, ARRAY_A));
+		return stripslashes_deep($wpdb->get_row($wpdb->prepare(
+			"SELECT * FROM %1s WHERE trail_id = %d",
+			$table_trails,
+			(int)$trail_id
+		), ARRAY_A));
 	}
 
 	/** Creates a New Listing

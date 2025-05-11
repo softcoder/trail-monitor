@@ -15,16 +15,24 @@ jQuery(document).ready(function () {
 	$style = '';
 	if (!empty($record['color'])) $style = ' style="color: ' . $record['color'] . '"';?> 
 		[
-			'<input type="checkbox" name="bulk_action_list[]" value="<?= $record['status_id'] ?>" class="vstm_list_checkbox">',
-			'<span id="vstm_inline_no_edit_<?= $record['status_id'] ?>_name"><?= htmlspecialchars($record['name']) ?></span>'
-				+ '<input id="vstm_inline_edit_<?= $record['status_id'] ?>_name" value="<?= htmlspecialchars($record['name']) ?>" maxlength="50">',
-			'<span id="vstm_inline_no_edit_<?= $record['status_id'] ?>_sort_order"><?= $record['sort_order'] ?></span>'
-				+	'<?= vstm_number_select('vstm_inline_edit_' . $record['status_id'] . '_sort_order', 1, 20, $record['sort_order']) ?>',
-			'<span id="vstm_inline_no_edit_<?= $record['status_id'] ?>_color"<?= $style ?>><?= $record['color'] ?></span>'
-				+ '	<div id="vstm_inline_edit_<?= $record['status_id'] ?>_cbox"><input id="vstm_<?= $record['status_id'] ?>_color" value="<?= $record['color'] ?>" class="vstm_colorpicker"></div>',
-			'<a href="javascript:void(0)" onclick="showInlineEditableFields(<?= $record['status_id'] ?>)" id="vstm_inline_no_edit_<?= $record['status_id'] ?>_edit" class="vstm_intable_button">Edit</a>'
-				+	'<a href="javascript:void(0)" onclick="saveInlineEditableFields(<?= $record['status_id'] ?>)" id="vstm_inline_edit_<?= $record['status_id'] ?>_save" class="vstm_intable_button">Save</a>'
-				+	'<a href="javascript:void(0)" onclick="hideInlineEditableFields(<?= $record['status_id'] ?>)" id="vstm_inline_edit_<?= $record['status_id'] ?>_cancel" class="vstm_intable_button">Cancel</a>'
+			'<input type="checkbox" name="bulk_action_list[]" value="<?php echo esc_html($record['status_id']) ?>" class="vstm_list_checkbox">',
+			'<span id="vstm_inline_no_edit_<?php echo esc_html($record['status_id']) ?>_name"><?php echo esc_html($record['name']) ?></span>'
+				+ '<input id="vstm_inline_edit_<?php echo esc_html($record['status_id']) ?>_name" value="<?php echo esc_html($record['name']) ?>" maxlength="50">',
+			'<span id="vstm_inline_no_edit_<?php echo esc_html($record['status_id']) ?>_sort_order"><?php echo esc_html($record['sort_order']) ?></span>'
+				+ '<select id="<?php echo esc_html('vstm_inline_edit_' . $record["status_id"] . '_sort_order') ?>" name="<?php echo esc_html('vstm_inline_edit_' . $record["status_id"] . '_sort_order') ?>" class="">'
+			<?php	for ($i = 1; $i < 20 + 1; $i++) {
+						if ($record['sort_order'] == $i) { ?>
+						+ '<option value="<?php echo esc_attr($i) ?>" selected="selected"><?php echo esc_attr($i) ?></option>'
+			<?php		} else { ?>
+						+ '<option value="<?php echo esc_attr($i) ?>"><?php echo esc_attr($i) ?></option>'
+			<?php	    }  
+		            } ?>
+				+ '</select>',
+			'<span id="vstm_inline_no_edit_<?php echo esc_html($record['status_id']) ?>_color"<?php echo wp_kses_post($style) ?>><?php echo wp_kses_post($record['color']) ?></span>'
+				+ '	<div id="vstm_inline_edit_<?php echo esc_html($record['status_id']) ?>_cbox"><input id="vstm_<?php echo esc_html($record['status_id']) ?>_color" value="<?php echo wp_kses_post($record['color']) ?>" class="vstm_colorpicker"></div>',
+			'<a href="javascript:void(0)" onclick="showInlineEditableFields(<?php echo esc_html($record['status_id']) ?>)" id="vstm_inline_no_edit_<?php echo esc_html($record['status_id']) ?>_edit" class="vstm_intable_button">Edit</a>'
+				+	'<a href="javascript:void(0)" onclick="saveInlineEditableFields(<?php echo esc_html($record['status_id']) ?>)" id="vstm_inline_edit_<?php echo esc_html($record['status_id']) ?>_save" class="vstm_intable_button">Save</a>'
+				+	'<a href="javascript:void(0)" onclick="hideInlineEditableFields(<?php echo esc_html($record['status_id']) ?>)" id="vstm_inline_edit_<?php echo esc_html($record['status_id']) ?>_cancel" class="vstm_intable_button">Cancel</a>'
 		],
 <?php } ?>
 	];
@@ -42,7 +50,7 @@ jQuery(document).ready(function () {
 </script>
 <div class="wrap vstm_adminmain">
 	<h2>Trail Status | Status List &nbsp; <a href="#vstm_add" class="add-new-h2">Add New</a></h2>
-	<?= vstm_display_messages($message_list) ?>
+	<?php echo wp_kses_post(vstm_display_messages($message_list)) ?>
 
 <?php // ***** Current Status List ***** ?>	
 	<form method="post" action="admin.php?page=trail-status-2-statuses" style="max-width: 600px;">
@@ -83,7 +91,28 @@ if (20 > sizeof($status_list)) {
 		</p>
 		<p>
 			<label for="vstm_sort_order">Sort Order</label>
-			<?= vstm_select_input_sort_order('vstm_sort_order') ?>
+			<select id="vstm_sort_order" name="vstm_sort_order">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="10">10</option>
+				<option value="11">11</option>
+				<option value="12">12</option>
+				<option value="13">13</option>
+				<option value="14">14</option>
+				<option value="15">15</option>
+				<option value="16">16</option>
+				<option value="17">17</option>
+				<option value="18">18</option>
+				<option value="19">19</option>
+				<option value="20">20</option>
+			</select>
 		</p>
 		<p>
 			<label for="vstm_color">Color (hex code)</label>
