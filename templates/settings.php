@@ -232,6 +232,10 @@ function vstm_options_page_html() {
 		return;
 	}
 
+    if (isset($_POST['_wpnonce'])) {
+        check_admin_referer('plugin_settings');
+    }
+
 	// add error/update messages
 
 	// check if the user have submitted the settings
@@ -248,6 +252,7 @@ function vstm_options_page_html() {
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<form action="options.php" method="post">
 			<?php
+            wp_nonce_field('plugin_settings');
 			// output security fields for the registered setting "vstm"
 			settings_fields( 'vstm' );
 			// output setting sections and their fields

@@ -86,12 +86,20 @@ function vstm_sc_table_list ($attributes, $content = null) {
 			$output .= '<td class="' . $img_class . '">';
 			if ($show_images) {
 				if (!empty($trail['image_id'])) {
-					$image_thumb_url = wp_get_attachment_thumb_url($trail['image_id']);
 					$image_alt = htmlspecialchars(get_post_meta($trail['image_id'], '_wp_attachment_image_alt', true));
 					$image_page_url = get_attachment_link($trail['image_id']);
-					$output .= '<a href="' . $image_page_url . '" target="_blank"><img src="' . $image_thumb_url . '" alt="' . $image_alt . '"';
-					if ($box_shadow) $output .= ' class="vstm_box_shadow"';
-					$output .= '></a>';
+					$output .= '<a href="' . $image_page_url . '" target="_blank">';
+					
+					$attrs = array(
+						'alt' => $image_alt
+					);
+					if ($box_shadow) {
+						$attrs['class'] = 'vstm_box_shadow';
+					}
+			
+					$output .= wp_get_attachment_image( $trail['image_id'], [100,60], false, $attrs );
+					$output .= '</a>';
+
 				} else {
 					$output .= '<img src="' . plugins_url('images/trail-placeholder.png', __FILE__) . '" alt="">';
 				}
@@ -171,12 +179,19 @@ function vstm_sc_table ($attributes, $content = null) {
 			if ($show_images) {
 				$output .= '<td class="' . $img_class . '">';
 				if (!empty($trail['image_id'])) {
-					$image_thumb_url = wp_get_attachment_thumb_url($trail['image_id']);
 					$image_alt = htmlspecialchars(get_post_meta($trail['image_id'], '_wp_attachment_image_alt', true));
 					$image_page_url = get_attachment_link($trail['image_id']);
-					$output .= '<a href="' . $image_page_url . '" target="_blank"><img src="' . $image_thumb_url . '" alt="' . $image_alt . '"';
-					if ($box_shadow) $output .= ' class="vstm_box_shadow"';
-					$output .= '></a>';
+					$output .= '<a href="' . $image_page_url . '" target="_blank">';
+					
+					$attrs = array(
+						'alt' => $image_alt
+					);
+					if ($box_shadow) {
+						$attrs['class'] = 'vstm_box_shadow';
+					}
+					$output .= wp_get_attachment_image( $trail['image_id'], [100,60], false, $attrs );
+					
+					$output .= '</a>';
 				} else {
 					$output .= '<img src="' . plugins_url('images/trail-placeholder.png', __FILE__) . '" alt="">';
 				}
@@ -252,12 +267,19 @@ function vstm_sc_blocks ($attributes, $content = null) {
 			if ($show_images) {
 				$output .= '<div class="' . $img_class . '">';
 				if (!empty($trail['image_id'])) {
-					$image_thumb_url = wp_get_attachment_thumb_url($trail['image_id']);
 					$image_alt = htmlspecialchars(get_post_meta($trail['image_id'], '_wp_attachment_image_alt', true));
 					$image_page_url = get_attachment_link($trail['image_id']);
-					$output .= '<a href="' . $image_page_url . '" target="_blank"><img src="' . $image_thumb_url . '" alt="' . $image_alt . '"';
-					if ($box_shadow) $output .= ' class="vstm_box_shadow"';
-					$output .= '></a>';
+					$output .= '<a href="' . $image_page_url . '" target="_blank">';
+					
+					$attrs = array(
+						'alt' => $image_alt
+					);
+					if ($box_shadow) {
+						$attrs['class'] = 'vstm_box_shadow';
+					}
+					$output .= wp_get_attachment_image( $trail['image_id'], [100,60], false, $attrs );
+					
+					$output .= '</a>';
 				} else {
 					$output .= '<img src="' . plugins_url('images/trail-placeholder.png', __FILE__) . '">';
 				}

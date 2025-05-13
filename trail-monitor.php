@@ -2,7 +2,7 @@
 /* Show Trail Information
   Plugin Name: Trail Monitor
   Plugin URI: https://hiking.princegeorge.tech/software/trail-monitor-wordpress-plugin/
-  Version: 1.1
+  Version: 1.2
   Description: Show up to date information for hiking trails.
   Author: VSoft Solutions
   Author URI: https://hiking.princegeorge.tech/
@@ -24,7 +24,7 @@ if ( isset( $vtsm_dir ) ) {
 }
 $vtsm_dir = dirname( __FILE__ );
 
-define('VSTM_VER', 1.1);
+define('VSTM_VER', 1.2);
 
 // ****** Table Names *****
 global $wpdb;
@@ -97,7 +97,7 @@ function vstm_register_session() {
  */
 
 function vstm_enqueue_recaptcha() {
-	wp_enqueue_script('google-recaptcha', 'https://www.google.com/recaptcha/api.js', [], null, true);
+	wp_enqueue_script('google-recaptcha', 'https://www.google.com/recaptcha/api.js', [], VSTM_VER, true);
 }
 
 /** Register the Widgets
@@ -110,7 +110,7 @@ function vstm_load_widgets() {
 /** Load CSS and JS Files
  */
 function vstm_scripts () {
-	wp_register_style('vstm_css', plugins_url('trail-monitor.css', __FILE__));
+	wp_register_style('vstm_css', plugins_url('trail-monitor.css', __FILE__), [], VSTM_VER);
 	wp_enqueue_style('vstm_css');
 }
 

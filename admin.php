@@ -176,7 +176,7 @@ function vstm_trail_edit_page () {
 
 		// * Link: Sanitize and Add http:// if Missing *
 		if (!empty($_POST['link'])) {
-			$link = $_POST['link'];			
+			$link = wp_kses_post(wp_unslash($_POST['link']));
 			if (0 != strncasecmp($link, "http://", 7) && 0 != strncasecmp($link, "https://", 8))
 				$link = 'http://' . $link;
 			$link = filter_var($link, FILTER_SANITIZE_URL);
@@ -187,7 +187,7 @@ function vstm_trail_edit_page () {
 		// * Comment: Sanitize
 		if (!empty($_POST['comment'])) {
 			//$comment = filter_var(wp_unslash(trim($_POST['comment']), FILTER_SANITIZE_STRING));
-			$comment = wp_kses_post($_POST['comment']);
+			$comment = wp_kses_post(wp_unslash($_POST['comment']));
 			
 		} else {
 			$comment = null;
@@ -389,8 +389,12 @@ function vstm_update () {
 			if (isset($status_id))
 				$vstm_Trails_Model->set_status($trail['trail_id'], $status_id);
 		}
-		update_option('vstm_notes_sc', filter_var(wp_unslash(trim($_POST['vstm_notes_sc']), FILTER_SANITIZE_STRING)));
-		update_option('vstm_notes_widget', filter_var(wp_unslash(trim($_POST['vstm_notes_widget']), FILTER_SANITIZE_STRING)));
+		if(isset($_POST['vstm_notes_sc'])) {
+			update_option('vstm_notes_sc', wp_kses_post( filter_var( wp_unslash( $_POST['vstm_notes_sc']))));
+		}
+		if(isset($_POST['vstm_notes_widget'])) {
+			update_option('vstm_notes_widget', wp_kses_post(filter_var(wp_unslash( $_POST['vstm_notes_widget']))));
+		}
 		$message_list[] = ['Statuses Updated', 1, 3];
 	}
 		

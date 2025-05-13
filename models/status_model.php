@@ -18,7 +18,7 @@ class vstm_Status_Model {
 		global $wpdb, $table_statuses;
 
 		return stripslashes_deep($wpdb->get_results($wpdb->prepare(
-			"SELECT * FROM %1s",
+			"SELECT * FROM %i",
 			$table_statuses
 		), ARRAY_A));
 	}	

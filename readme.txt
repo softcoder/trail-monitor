@@ -2,10 +2,10 @@
 Contributors: softcoder
 Donate link: https://hiking.princegeorge.tech/software/trail-monitor-wordpress-plugin/
 Tags: trail, trails, outdoors, hiking, status
-Requires at least: 5.8
+Requires at least: 6.2
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv3
 
 Display the status of trails on your website.

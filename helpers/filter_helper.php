@@ -16,7 +16,7 @@
  */
 function vstm_get_request_string ($field, $default=null, $allow_tags = false) {
 	if (!isset($_REQUEST[$field])) return $default;
-	return vstm_filter_string(wp_unslash($_REQUEST[$field]), false, $allow_tags, $default);
+	return vstm_filter_string(sanitize_text_field(wp_unslash($_REQUEST[$field])), false, $allow_tags, $default);
 }
 
 /** Gets and Cleans a Textarea Post
@@ -26,7 +26,7 @@ function vstm_get_request_string ($field, $default=null, $allow_tags = false) {
  */
 function vstm_get_request_texarea ($field, $default = null) {
 	if (!isset($_REQUEST[$field])) return $default;
-	return vstm_filter_string(wp_unslash($_REQUEST[$field]), true, false, $default);
+	return vstm_filter_string(sanitize_textarea_field(wp_unslash($_REQUEST[$field])), true, false, $default);
 }
 
 /** Checks the Variable and Returns It as an Integer or Null
@@ -36,7 +36,7 @@ function vstm_get_request_texarea ($field, $default = null) {
  */
 function vstm_get_request_int ($field, $default=null) {
 	if (!isset($_REQUEST[$field])) return $default;
-	return vstm_filter_int_strict($_REQUEST[$field], $default);
+	return vstm_filter_int_strict(sanitize_text_field(wp_unslash($_REQUEST[$field])), $default);
 }
 
 /** Checks the Submitted Parameters and Returns It as a Float
@@ -46,7 +46,7 @@ function vstm_get_request_int ($field, $default=null) {
  */
 function vstm_get_request_float ($field, $default = null) {
 	if (!isset($_REQUEST[$field])) return $default;
-	return vstm_filter_float($_REQUEST[$field], $default);
+	return vstm_filter_float(sanitize_text_field(wp_unslash($_REQUEST[$field])), $default);
 }
 
 /** Gets and Cleans a Email Post Value
@@ -56,7 +56,7 @@ function vstm_get_request_float ($field, $default = null) {
  */
 function vstm_get_request_email ($field) {
 	if (!isset($_REQUEST[$field])) return ['email' => '', 'valid' => false];
-	return vstm_filter_email($_REQUEST[$field]);
+	return vstm_filter_email(sanitize_text_field(wp_unslash($_REQUEST[$field])));
 }
 
 /** Gets and Cleans a URL Value
@@ -66,7 +66,7 @@ function vstm_get_request_email ($field) {
  */
 function vstm_get_request_link ($field, $default = null) {
 	if (!isset($_REQUEST[$field])) return $default;
-	return vstm_filter_link($_REQUEST[$field]);
+	return vstm_filter_link(sanitize_text_field(wp_unslash($_REQUEST[$field])));
 }
 
 /** Gets and Cleans a Boolean Post
@@ -76,7 +76,7 @@ function vstm_get_request_link ($field, $default = null) {
  */
 function vstm_get_request_boolean ($field, $default = null) {
 	if (!isset($_REQUEST[$field])) return $default;
-	return vstm_filter_boolean ($_REQUEST[$field], $default);
+	return vstm_filter_boolean (sanitize_text_field(wp_unslash($_REQUEST[$field])), $default);
 }
 
 /** Get the Bulk Action List and Only Allows Integers in the List
@@ -85,7 +85,7 @@ function vstm_get_request_boolean ($field, $default = null) {
  */
 function vstm_get_request_str_array ($field) {
 	if (!isset($_REQUEST[$field])) return array();
-	return vstm_filter_str_array($_REQUEST[$field]);
+	return vstm_filter_str_array(sanitize_text_field(wp_unslash($_REQUEST[$field])));
 }
 
 /** Get the Bulk Action List and Only Allows Integers in the List
@@ -93,8 +93,7 @@ function vstm_get_request_str_array ($field) {
  */
 function vstm_get_request_int_array ($field = 'bulk_action_list') {
 	if (!isset($_REQUEST[$field])) return array();
-	return vstm_filter_int_array($_REQUEST[$field]);
-}
+	return vstm_filter_int_array(sanitize_text_field(wp_unslash($_REQUEST[$field])));}
 
 /** Cleans a String Value
  * @param string $in

@@ -20,19 +20,19 @@ function vstm_load_styles_and_scripts () {
 		update_user_option(get_current_user_id(), 'media_library_mode', $new_mode);
 		$mode = $new_mode;
 	}
-	if (!empty($_SERVER['PHP_SELF']) && 'upload.php' === basename($_SERVER['PHP_SELF']) && 'grid' !== $mode) {
+	if (!empty($_SERVER['PHP_SELF']) && 'upload.php' === basename(sanitize_text_field(wp_unslash($_SERVER['PHP_SELF']))) && 'grid' !== $mode) {
 		wp_dequeue_script('media');
 	}
 	wp_enqueue_media();
 
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('jquery-ui-checkboxradio');
-	wp_register_style('jquery-ui', plugins_url('../public/css/jquery-ui.css', __FILE__));
+	wp_register_style('jquery-ui', plugins_url('../public/css/jquery-ui.css', __FILE__),array(),VSTM_VER);
 	wp_enqueue_style('jquery-ui');
 
-	wp_register_style('vstm_datatables_css', plugins_url('../datatables.min.css', __FILE__));
+	wp_register_style('vstm_datatables_css', plugins_url('../datatables.min.css', __FILE__),array(),VSTM_VER);
 	wp_enqueue_style('vstm_datatables_css');
-	wp_enqueue_script('vstm_datatables', plugins_url('../datatables.min.js', __FILE__));
+	wp_enqueue_script('vstm_datatables', plugins_url('../datatables.min.js', __FILE__),array(),VSTM_VER,true);
 		
     if (is_admin()) {    
 	    wp_enqueue_style('wp-color-picker'); 
