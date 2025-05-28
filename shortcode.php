@@ -336,28 +336,30 @@ function vstm_sc_submit ($attributes, $content = null) {
 	if (isset($_POST['_wpnonce'])) {
 		vstm_verify_recaptcha();
 
+		$nonce_var = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
+
 		$failure = false;
 		// *** Validate & Check ***
 		// * Trail Id and Nonce *
 		//$trail_id = vstm_get_request_int('trail_id');
 		// Currently shortcode user can only add trail statuses, NO EDIT
 		$trail_id = null;
-		if (empty($trail_id)) { 
+		//if (empty($trail_id)) { 
 			//check_admin_referer('trail_add');
-			if ( !wp_verify_nonce( wp_kses_post(wp_unslash($_POST['_wpnonce'], FILTER_SANITIZE_STRING)), 'trail_add' ) ) {
-				wp_die( esc_html(__( 'Security check', 'vstm-trail-monitor' )) ); 
-			}
-		} 
+		if ( !wp_verify_nonce( $nonce_var, 'trail_add' ) ) {
+			wp_die( esc_html(__( 'Security check', 'vstm-trail-monitor' )) ); 
+		}
+		//} 
 		
 		// * Name Is Required */
-		$name = vstm_get_request_string('trail_name');
+		$name = vstm_get_request_string('trail_name', null, false, 'user', $nonce_var, 'trail_add');
 		if (empty($name)) {
 			$message_list[] = ['Name is Required', 3, 3];
 			$failure = true;
 		}
 
 		// * Visit Date Is Required *
-		$visitdate = vstm_get_request_string('visitdate');
+		$visitdate = vstm_get_request_string('visitdate', null, false, 'user', $nonce_var, 'trail_add');
 		if (empty($visitdate)) {
 			$message_list[] = ['Visit Date is Required', 3, 3];
 			$failure = true;
@@ -375,16 +377,16 @@ function vstm_sc_submit ($attributes, $content = null) {
 			$show_widget = 1;
 		
 		// * Sanitize Integer Fields *
-		$sort_order = vstm_get_request_int('sort_order', 99);
-		$image_id = getImagefromRequest();
+		$sort_order = vstm_get_request_int('sort_order', 99, 'user', $nonce_var, 'trail_add');
+		$image_id = vstm_getImagefromRequest();
 
-		$status_id = vstm_get_request_int('status_id');
+		$status_id = vstm_get_request_int('status_id', null, 'user', $nonce_var, 'trail_add');
 		//$approved = vstm_get_request_int('trail_approved');
 		$approved = 0; // non admin users cannot set this value
 
 		// * Link: Sanitize and Add http:// if Missing *
 		if (!empty($_POST['link'])) {
-			$link = wp_kses_post(wp_unslash($_POST['link'], FILTER_SANITIZE_STRING));
+			$link = wp_kses_post(wp_unslash($_POST['link']), FILTER_SANITIZE_STRING);
 			if (0 != strncasecmp($link, "http://", 7) && 0 != strncasecmp($link, "https://", 8))
 				$link = 'http://' . $link;
 			$link = filter_var($link, FILTER_SANITIZE_URL);
@@ -394,7 +396,7 @@ function vstm_sc_submit ($attributes, $content = null) {
 
 		// * Comment: Sanitize
 		if (!empty($_POST['comment'])) {
-			$comment = filter_var(wp_unslash($_POST['comment'], FILTER_SANITIZE_STRING));
+			$comment = wp_kses_post(wp_unslash($_POST['comment']));
 			
 		} else {
 			$comment = null;
@@ -402,7 +404,7 @@ function vstm_sc_submit ($attributes, $content = null) {
 
 		// Submitter: Sanitize
 		if (!empty($_POST['submitter_name'])) {
-			$submitter = vstm_get_request_string('submitter_name');
+			$submitter = vstm_get_request_string('submitter_name', null, false, 'user', $nonce_var, 'trail_add');
 		}
 		else {
 			$submitter = null;
@@ -425,7 +427,7 @@ function vstm_sc_submit ($attributes, $content = null) {
 				include(VSTM_ROOT_PATH . 'helpers/notifications.php');
 				$msg_to_send = "One or more Trail Statuses have been added for review.<br>Trail Name [$name] Hike Date [$visitdate] Submitted by [$submitter]";
 				$subject = 'New Trail Added for Review';
-				sendNotification($msg_to_send, $subject, 'vstm_notification_last_sent_date');
+				vstm_sendNotification($msg_to_send, $subject, 'vstm_notification_last_sent_date');
 			} else {
 				$message_list[] = ['Error Adding Trail ' . $name, 3, 3];
 				$failure = true;
@@ -449,20 +451,25 @@ function vstm_sc_submit ($attributes, $content = null) {
 			$record['status_id'] = $status_id;
 			$record['hidden'] = !$approved;
 			include(VSTM_ROOT_PATH . 'views/trail_edit.php');
-		} else {
-			$trail_id = vstm_get_request_int('trail');
+		} 
+		else {
+			$trail_id = vstm_get_request_int('trail', null, 'user', $nonce_var, 'trail_add');
 			if (empty($trail_id)) {
 				$record = ['name'=>'', 'visitdate'=>'', 'link'=>'', 'comment'=>'', 'submitter_name'=>'', 'image_id'=>'', 'sort_order'=>'', 'show_widget'=>'1', 'show_shortcode'=>'1', 'hidden'=>0, 'status_id'=>0];
-			} else {
+			} 
+			else {
 				$record = $vstm_Trails_Model->get($trail_id);
 			}
 			// ***** Call View *****
 			include(VSTM_ROOT_PATH . 'views/trail_edit.php');
 			include(VSTM_ROOT_PATH . 'views/about.php');
 		}
-	} else {
+	} 
+	else {
 		// ***** No Form Submitted *****
-		$trail_id = vstm_get_request_int('trail');
+		//$trail_id = vstm_get_request_int('trail');
+		$trail_id = (isset($_REQUEST['trail']) ? vstm_filter_int_strict(sanitize_text_field(wp_unslash($_REQUEST['trail'])), null) : null);
+
 		if (empty($trail_id)) {
 			$record = ['name'=>'', 'visitdate'=>'', 'link'=>'', 'comment'=>'', 'submitter_name'=>'', 'image_id'=>'', 'sort_order'=>'', 'show_widget'=>'1', 'show_shortcode'=>'1', 'hidden'=>0, 'status_id'=>0];
 		} else {
@@ -478,12 +485,13 @@ function vstm_sc_submit ($attributes, $content = null) {
 /** Manually handling the upload of the trail image for non admin users (shortcode submit form)
  * @return int - media library image id
  */
-function getImagefromRequest() {
+function vstm_getImagefromRequest() {
 	$html_form_image_control_id = 'image_id';
 	$html_form_image_file_upload_control_id = 'image_upload';
 
 	if(isset($_POST['_wpnonce'])) {
-		if ( !wp_verify_nonce( wp_kses_post(wp_unslash($_POST['_wpnonce'], FILTER_SANITIZE_STRING)), 'trail_add' ) ) {
+		$nonce_var = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
+		if ( !wp_verify_nonce( $nonce_var, 'trail_add' ) ) {
 			wp_die( esc_html(__( 'Security check image upload', 'vstm-trail-monitor' )) ); 
 		}
 	}
@@ -584,7 +592,8 @@ function vstm_verify_recaptcha() {
 
 	if( !empty($secret_key)) {
 		if(isset($_POST['_wpnonce'])) {
-			if ( !wp_verify_nonce( wp_kses_post(wp_unslash($_POST['_wpnonce'], FILTER_SANITIZE_STRING)), 'trail_add' ) ) {
+			$nonce_var = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
+			if ( !wp_verify_nonce( $nonce_var, 'trail_add' ) ) {
 				wp_die( esc_html(__( 'Security check recaptcha', 'vstm-trail-monitor' )) ); 
 			}
 		}

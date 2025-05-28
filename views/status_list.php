@@ -8,46 +8,36 @@
  * @created			22/04/2025
 */
 ?>
-<script>
-jQuery(document).ready(function () {
-	var tableData = [
-<?php if (!empty($status_list)) foreach ($status_list as $record) {
-	$style = '';
-	if (!empty($record['color'])) $style = ' style="color: ' . $record['color'] . '"';?> 
-		[
-			'<input type="checkbox" name="bulk_action_list[]" value="<?php echo esc_html($record['status_id']) ?>" class="vstm_list_checkbox">',
-			'<span id="vstm_inline_no_edit_<?php echo esc_html($record['status_id']) ?>_name"><?php echo esc_html($record['name']) ?></span>'
-				+ '<input id="vstm_inline_edit_<?php echo esc_html($record['status_id']) ?>_name" value="<?php echo esc_html($record['name']) ?>" maxlength="50">',
-			'<span id="vstm_inline_no_edit_<?php echo esc_html($record['status_id']) ?>_sort_order"><?php echo esc_html($record['sort_order']) ?></span>'
-				+ '<select id="<?php echo esc_html('vstm_inline_edit_' . $record["status_id"] . '_sort_order') ?>" name="<?php echo esc_html('vstm_inline_edit_' . $record["status_id"] . '_sort_order') ?>" class="">'
-			<?php	for ($i = 1; $i < 20 + 1; $i++) {
-						if ($record['sort_order'] == $i) { ?>
-						+ '<option value="<?php echo esc_attr($i) ?>" selected="selected"><?php echo esc_attr($i) ?></option>'
-			<?php		} else { ?>
-						+ '<option value="<?php echo esc_attr($i) ?>"><?php echo esc_attr($i) ?></option>'
-			<?php	    }  
-		            } ?>
-				+ '</select>',
-			'<span id="vstm_inline_no_edit_<?php echo esc_html($record['status_id']) ?>_color"<?php echo wp_kses_post($style) ?>><?php echo wp_kses_post($record['color']) ?></span>'
-				+ '	<div id="vstm_inline_edit_<?php echo esc_html($record['status_id']) ?>_cbox"><input id="vstm_<?php echo esc_html($record['status_id']) ?>_color" value="<?php echo wp_kses_post($record['color']) ?>" class="vstm_colorpicker"></div>',
-			'<a href="javascript:void(0)" onclick="showInlineEditableFields(<?php echo esc_html($record['status_id']) ?>)" id="vstm_inline_no_edit_<?php echo esc_html($record['status_id']) ?>_edit" class="vstm_intable_button">Edit</a>'
-				+	'<a href="javascript:void(0)" onclick="saveInlineEditableFields(<?php echo esc_html($record['status_id']) ?>)" id="vstm_inline_edit_<?php echo esc_html($record['status_id']) ?>_save" class="vstm_intable_button">Save</a>'
-				+	'<a href="javascript:void(0)" onclick="hideInlineEditableFields(<?php echo esc_html($record['status_id']) ?>)" id="vstm_inline_edit_<?php echo esc_html($record['status_id']) ?>_cancel" class="vstm_intable_button">Cancel</a>'
-		],
-<?php } ?>
-	];
-    jQuery("#table").DataTable( {
-		data: tableData,
-		autoWidth: false,
-		pageLength: 25,
-		stateSave: true,
-		columnDefs: [ 
-			{orderable: false, targets: [0, 4]}
-		],
-		order: [[1, "asc"]]
-	});
-});
-</script>
+
+<?php 
+	if (!defined('ABSPATH')) {
+		exit;
+	}
+
+	wp_enqueue_script( 'vstm-status-list-script', plugins_url('/status_list.js', __FILE__), array(), VSTM_VER, true); 
+?>
+
+<?php 
+	if (!empty($status_list)) foreach ($status_list as $record) {
+		
+		$style = '';
+		if (!empty($record['color'])) 
+			//$style = ' style="color: ' . $record['color'] . '"';
+			$style = " style='color: " . $record['color'] . "'";
+
+		//status_id, trail_name, sort_order, style
+		wp_add_inline_script( 'vstm-status-list-script', 'addTableData("' .
+					esc_html($record['status_id']) . '", "' . 
+					esc_html($record['name'])     .	'", "' . 
+					esc_html($record['sort_order']) . '", "' .
+					wp_kses_post($style) . '", "' .
+					wp_kses_post($record['color']) .
+			'");' );
+	} 
+
+	wp_add_inline_script( 'vstm-status-list-script', 'buildTableData();');
+?>
+	
 <div class="wrap vstm_adminmain">
 	<h2>Trail Status | Status List &nbsp; <a href="#vstm_add" class="add-new-h2">Add New</a></h2>
 	<?php echo wp_kses_post(vstm_display_messages($message_list)) ?>

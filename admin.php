@@ -8,6 +8,10 @@
  * @created			22/04/2025
  */
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require_once(VSTM_ROOT_PATH . 'templates/common.php');
 
 /** Creates the Trail List Approvals Page and Handles Bulk Actions and Reordering
@@ -32,11 +36,13 @@ function vstm_trail_list_page ($show_unapproved_only=false) {
 	$message_list = array();
 	
 	// ***** Run Bulk Actions if Submitted *****
+	//$bulk_action_list = vstm_get_request_int_array('bulk_action_list', 'admin', $_POST['_wpnonce'], 'trails_bulk');
 	$bulk_action_list = vstm_get_request_int_array();
 	if (isset($_POST['_wpnonce']) && !empty($bulk_action_list)) {
 		// *** Security ***
 		check_admin_referer('trails_bulk');
-		$action = vstm_get_request_string('action');
+		$nonce_var = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
+		$action = vstm_get_request_string('action', null, false, 'admin', $nonce_var, 'trails_bulk');
 
 		$trail_list = $vstm_Trails_Model->get_names_list();
 		
@@ -105,6 +111,8 @@ function vstm_trail_list_page ($show_unapproved_only=false) {
 						$message_list[] = ['There was an error updating ' . $trail_list[$trail_id], 3, 2];
 				}
 			 	break;
+			default:
+				$message_list[] = ['There was an UNKNOWN action detected [' . $action .']', 3, 2];
 		}
 	}
 	
@@ -136,22 +144,30 @@ function vstm_trail_edit_page () {
 		$failure = false;
 		// *** Validate & Check ***
 		// * Trail Id and Nonce *
-		$trail_id = vstm_get_request_int('trail_id');
-		if (empty($trail_id)) { 
-			check_admin_referer('trail_add');
+
+		$nonce_action = '';
+		if (empty($_REQUEST['trail_id'])) { 
+			$nonce_action = 'trail_add';
 		} else {
-			check_admin_referer('trail_edit_' . $trail_id);
+			$trail_id = vstm_filter_int_strict(sanitize_text_field(wp_unslash($_REQUEST['trail_id'])), null);
+			$nonce_action = 'trail_edit_' . $trail_id;
 		}
+
+		// *** Security ***
+		check_admin_referer($nonce_action);
+
+		$nonce_var = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
+		$trail_id = vstm_get_request_int('trail_id', null, 'admin', $nonce_var, $nonce_action);
 		
 		// * Name Is Required *
-		$name = vstm_get_request_string('trail_name');
+		$name = vstm_get_request_string('trail_name', null, false, 'admin', $nonce_var, $nonce_action);
 		if (empty($name)) {
 			$message_list[] = ['Name is Required', 3, 3];
 			$failure = true;
 		}
 
 		// * Visit Date Is Required *
-		$visitdate = vstm_get_request_string('visitdate');
+		$visitdate = vstm_get_request_string('visitdate', null, false, 'admin', $nonce_var, $nonce_action);
 		if (empty($visitdate)) {
 			$message_list[] = ['Visit Date is Required', 3, 3];
 			$failure = true;
@@ -169,10 +185,10 @@ function vstm_trail_edit_page () {
 			$show_widget = 1;
 		
 		// * Sanitize Integer Fields *
-		$sort_order = vstm_get_request_int('sort_order', 99);
-		$image_id = vstm_get_request_int('image_id');
-		$status_id = vstm_get_request_int('status_id');
-		$approved = vstm_get_request_int('trail_approved');
+		$sort_order = vstm_get_request_int('sort_order', 99, 'admin', $nonce_var, $nonce_action);
+		$image_id = vstm_get_request_int('image_id', null, 'admin', $nonce_var, $nonce_action);
+		$status_id = vstm_get_request_int('status_id', null, 'admin', $nonce_var, $nonce_action);
+		$approved = vstm_get_request_int('trail_approved', null, 'admin', $nonce_var, $nonce_action);
 
 		// * Link: Sanitize and Add http:// if Missing *
 		if (!empty($_POST['link'])) {
@@ -195,7 +211,7 @@ function vstm_trail_edit_page () {
 
 		// Submitter: Sanitize
 		if (!empty($_POST['submitter_name'])) {
-			$submitter = vstm_get_request_string('submitter_name');
+			$submitter = vstm_get_request_string('submitter_name', null, false, 'admin', $nonce_var, $nonce_action);
 		}
 		else {
 			$submitter = null;
@@ -242,9 +258,11 @@ function vstm_trail_edit_page () {
 			$table_data = $vstm_Trails_Model->get_list();
 			include(VSTM_ROOT_PATH . 'views/trail_list.php');
 		}
-	} else {
+	} 
+	else {
 		// ***** No Form Submitted *****
-		$trail_id = vstm_get_request_int('trail');
+		$trail_id = (isset($_REQUEST['trail']) ? vstm_filter_int_strict(sanitize_text_field(wp_unslash($_REQUEST['trail'])), null) : null);
+		//$trail_id = vstm_get_request_int('trail');
 		
 		if (empty($trail_id)) {
 			$record = ['name'=>'', 'visitdate'=>'', 'link'=>'', 'comment'=>'', 'submitter_name'=>'', 'image_id'=>'', 'sort_order'=>'', 'show_widget'=>'1', 'show_shortcode'=>'1', 'hidden'=>0, 'status_id'=>0];
@@ -274,11 +292,13 @@ function vstm_status_list_page () {
 	$message_list = array();
 	
 	// ***** Run Bulk Actions if Submitted *****
-	$bulk_action_list = vstm_get_request_int_array();
+	//$bulk_action_list = vstm_get_request_int_array('bulk_action_list', 'admin', $_POST['_wpnonce'], 'status_bulk');
+	$bulk_action_list = vstm_get_request_int_array('bulk_action_list');
 	if (isset($_POST['_wpnonce']) && !empty($bulk_action_list)) {
 		// *** Security ***
 		check_admin_referer('status_bulk');
-		$action = vstm_get_request_string('action');
+		$nonce_var = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
+		$action = vstm_get_request_string('action', null, false, 'admin', $nonce_var, 'status_bulk');
 		
 		// *** Run The Action ***
 		switch ($action) {
@@ -301,16 +321,17 @@ function vstm_status_list_page () {
 	
 	// ***** Add New Status if Submitted *****
 	if (isset($_POST['action']) && 'add' == $_POST['action']) {
-		check_admin_referer('status_add');
+		//check_admin_referer('status_add');
+		$nonce_var = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
 
 		// *** Check for Name ***
-		$name = vstm_get_request_string('vstm_name');
+		$name = vstm_get_request_string('vstm_name', null, false, 'admin', $nonce_var, 'status_add');
 		if (empty($name)) {
 			$message_list[] = ['The status needs a name.', 3, 3];
 		} else {
 			// *** Set Default Values if Not Submitted ***
-			$new_status_sort_order = vstm_get_request_int('vstm_sort_order', 1);
-			$new_status_color = vstm_get_request_string('vstm_color', 'black');
+			$new_status_sort_order = vstm_get_request_int('vstm_sort_order', 1, 'admin', $nonce_var, 'status_add');
+			$new_status_color = vstm_get_request_string('vstm_color', 'black', false, 'admin', $nonce_var, 'status_add');
 
 			$add_result = $vstm_Status_Model->add($name, $new_status_sort_order, $new_status_color);
 			if ($add_result) $message_list[] = ['Status Added', 1, 5];
@@ -339,10 +360,12 @@ function vstm_update_status () {
 	require_once(VSTM_ROOT_PATH . 'helpers/filter_helper.php');
 
 	// ***** Post Security *****
-	$status_id = vstm_get_request_int('status_id');
-	$name = vstm_get_request_string('name');
-	$sort_order = vstm_get_request_int('sort_order', 99);
-	$color = vstm_get_request_string('color', 'black');
+	$nonce_var = (isset($_POST['wp_nonce']) ? sanitize_text_field(wp_unslash($_POST['wp_nonce'])) : null);
+
+	$status_id = vstm_get_request_int('status_id', null, 'admin-ajax', $nonce_var, 'status_bulk');
+	$name = vstm_get_request_string('name', null, false, 'admin-ajax', $nonce_var, 'status_bulk');
+	$sort_order = vstm_get_request_int('sort_order', 99, 'admin-ajax', $nonce_var, 'status_bulk');
+	$color = vstm_get_request_string('color', 'black', false, 'admin-ajax', $nonce_var, 'status_bulk');
 	
 	// ***** Update Database if Status Id is Set *****
 	if (empty($status_id)) {
@@ -384,8 +407,10 @@ function vstm_update () {
 	
 	if (isset($_POST['_wpnonce'])) {
 		check_admin_referer('update');
+		$nonce_var = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
+
 		foreach ($trail_list as $trail) {
-			$status_id = vstm_get_request_int('t_' . $trail['trail_id']);
+			$status_id = vstm_get_request_int('t_' . $trail['trail_id'], null, 'admin', $nonce_var, 'update');
 			if (isset($status_id))
 				$vstm_Trails_Model->set_status($trail['trail_id'], $status_id);
 		}

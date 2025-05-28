@@ -9,91 +9,96 @@
 */
 
 /** Gets and Cleans a Post Value
- * @param string $field
- * @param string $default
+ * @param string $field - name of the field to extract
+ * @param string $default - the default value to return if null
  * @param boolean $allow_tags
+ * @param string $verify_nonce_type - null (none), non-admin = non-admin user, admin = admin user
+ * @param string $verify_nonce_value - the nonce request/post value to check
+ * @param string $verify_nonce_action - the nonce action name to check
  * @return string
  */
-function vstm_get_request_string ($field, $default=null, $allow_tags = false) {
+function vstm_get_request_string ($field, $default=null, $allow_tags = false, 
+                                  $verify_nonce_type=null, $verify_nonce_value=null, $verify_nonce_action=null) {
+	if(isset($verify_nonce_type)) {
+		if($verify_nonce_type == 'admin') {
+			check_admin_referer( $verify_nonce_action );
+		}
+		else if($verify_nonce_type == 'admin-ajax') {
+			check_ajax_referer($verify_nonce_action, 'wp_nonce');
+		}
+		else {
+			if(!wp_verify_nonce( $verify_nonce_value, $verify_nonce_action)) {
+				// wp_nonce_ays($verify_nonce_action)
+				wp_die( esc_html(__( 'Security check', 'vstm-trail-monitor' )) ); 
+			}
+		}
+	}
 	if (!isset($_REQUEST[$field])) return $default;
 	return vstm_filter_string(sanitize_text_field(wp_unslash($_REQUEST[$field])), false, $allow_tags, $default);
-}
-
-/** Gets and Cleans a Textarea Post
- * @param string $field
- * @param string $default
- * @return string|null
- */
-function vstm_get_request_texarea ($field, $default = null) {
-	if (!isset($_REQUEST[$field])) return $default;
-	return vstm_filter_string(sanitize_textarea_field(wp_unslash($_REQUEST[$field])), true, false, $default);
 }
 
 /** Checks the Variable and Returns It as an Integer or Null
  * @param string $field
  * @param int $default
+ * @param string $verify_nonce_type - null (none), non-admin = non-admin user, admin = admin user
+ * @param string $verify_nonce_value - the nonce request/post value to check
+ * @param string $verify_nonce_action - the nonce action name to check
  * @return int|null
  */
-function vstm_get_request_int ($field, $default=null) {
+function vstm_get_request_int ($field, $default=null,
+                               $verify_nonce_type=null, $verify_nonce_value=null, $verify_nonce_action=null) {
+	if(isset($verify_nonce_type)) {
+		if($verify_nonce_type == 'admin') {
+			check_admin_referer( $verify_nonce_action );
+		}
+		else if($verify_nonce_type == 'admin-ajax') {
+			check_ajax_referer($verify_nonce_action, 'wp_nonce');
+		}
+		else {
+			if(!wp_verify_nonce( $verify_nonce_value, $verify_nonce_action)) {
+				// wp_nonce_ays($verify_nonce_action)
+				wp_die( esc_html(__( 'Security check', 'vstm-trail-monitor' )) ); 
+			}
+		}
+	}
+
 	if (!isset($_REQUEST[$field])) return $default;
 	return vstm_filter_int_strict(sanitize_text_field(wp_unslash($_REQUEST[$field])), $default);
 }
 
-/** Checks the Submitted Parameters and Returns It as a Float
- * @param string $field
- * @param float $default
- * @return float
- */
-function vstm_get_request_float ($field, $default = null) {
-	if (!isset($_REQUEST[$field])) return $default;
-	return vstm_filter_float(sanitize_text_field(wp_unslash($_REQUEST[$field])), $default);
-}
-
-/** Gets and Cleans a Email Post Value
- * @param string $field
- * @param string $default
- * @return string|null
- */
-function vstm_get_request_email ($field) {
-	if (!isset($_REQUEST[$field])) return ['email' => '', 'valid' => false];
-	return vstm_filter_email(sanitize_text_field(wp_unslash($_REQUEST[$field])));
-}
-
-/** Gets and Cleans a URL Value
- * @param string $field
- * @param string $default
- * @return string|null
- */
-function vstm_get_request_link ($field, $default = null) {
-	if (!isset($_REQUEST[$field])) return $default;
-	return vstm_filter_link(sanitize_text_field(wp_unslash($_REQUEST[$field])));
-}
-
-/** Gets and Cleans a Boolean Post
- * @param string $field
- * @param string $default
- * @return string|null
- */
-function vstm_get_request_boolean ($field, $default = null) {
-	if (!isset($_REQUEST[$field])) return $default;
-	return vstm_filter_boolean (sanitize_text_field(wp_unslash($_REQUEST[$field])), $default);
-}
-
 /** Get the Bulk Action List and Only Allows Integers in the List
- * @param string $field
+ * 
+ * @param string $field - name of the field to extract
+ * @param string $verify_nonce_type - null (none), non-admin = non-admin user, admin = admin user
+ * @param string $verify_nonce_value - the nonce request/post value to check
+ * @param string $verify_nonce_action - the nonce action name to check
+
  * @return array
  */
-function vstm_get_request_str_array ($field) {
-	if (!isset($_REQUEST[$field])) return array();
-	return vstm_filter_str_array(sanitize_text_field(wp_unslash($_REQUEST[$field])));
-}
+function vstm_get_request_int_array ($field = 'bulk_action_list',
+                                     $verify_nonce_type=null, $verify_nonce_value=null, $verify_nonce_action=null) {
 
-/** Get the Bulk Action List and Only Allows Integers in the List
- * @return array
- */
-function vstm_get_request_int_array ($field = 'bulk_action_list') {
-	if (!isset($_REQUEST[$field])) return array();
-	return vstm_filter_int_array(sanitize_text_field(wp_unslash($_REQUEST[$field])));}
+	if(isset($verify_nonce_type)) {
+		if($verify_nonce_type == 'admin') {
+			check_admin_referer( $verify_nonce_action );
+		}
+		else if($verify_nonce_type == 'admin-ajax') {
+			check_ajax_referer($verify_nonce_action, 'wp_nonce');
+		}
+		else {
+			if(!wp_verify_nonce( $verify_nonce_value, $verify_nonce_action)) {
+				// wp_nonce_ays($verify_nonce_action)
+				wp_die( esc_html(__( 'Security check', 'vstm-trail-monitor' )) ); 
+			}
+		}
+	}
+
+	if (!isset($_REQUEST[$field])) 
+		return array();
+	
+	$id_list = map_deep(wp_unslash($_REQUEST[$field]),'sanitize_text_field');
+	return vstm_filter_int_array($id_list);
+}
 
 /** Cleans a String Value
  * @param string $in
@@ -116,39 +121,6 @@ function vstm_filter_string ($in, $allow_new_line=false, $allow_tags=false, $def
 	return $out;
 }
 
-/** Cleans an Array of String Values and Their Keys
- * @param array $in
- * @return array
- */
-function vstm_filter_str_array ($in) {
-	$out = array();
-	if (!empty($in)) foreach ($in as $key => $value) {
-		$out[trim(filter_var(wp_unslash($key), FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_HIGH | FILTER_FLAG_STRIP_LOW))] = trim(filter_var(wp_unslash($value), FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_HIGH | FILTER_FLAG_STRIP_LOW));
-	}
-	return $out;
-}
-
-/** Cleans and Checks an Email Address
- * @param string $in
- * @return array
- */
-function vstm_filter_email ($in) {
-	return filter_var(trim($in), FILTER_SANITIZE_EMAIL);
-}
-
-/** Gets and Cleans a URL Value
- * Adds in http:// if missing
- * @param string $in
- * @param string $default
- * @return string|null
- */
-function vstm_filter_link ($in) {
-	$link = trim($in);
-	if (0 != strncasecmp($link, "http://", 7) && 0 != strncasecmp($link, "https://", 8))
-		$link = 'http://' . $link;
-	return filter_var($link, FILTER_SANITIZE_URL);
-}
-
 /** Cleans Submitted Value and Returns It As a Integer
  * Fraction portion removed then everything except numbers, + & - are removed.
  * @param int $in
@@ -166,8 +138,12 @@ function vstm_filter_int ($in) {
  */
 function vstm_filter_int_array ($in) {
 	$out = array();
-	if (!empty($in)) foreach ($in as $key => $value) {
-		$out[$key] = (int)filter_var(preg_replace('/(\..*)/', '', $value), FILTER_SANITIZE_NUMBER_INT);
+	if (!empty($in)) {
+		//var_dump($in);
+		foreach ($in as $key => $value) {
+			$out[$key] = (int)filter_var(preg_replace('/(\..*)/', '', $value), FILTER_SANITIZE_NUMBER_INT);
+		}
+		//var_dump($out);
 	}
 	return $out;
 }
@@ -193,49 +169,5 @@ function vstm_filter_int_strict ($in, $default=null) {
 	} else {
 		$out = (int)$value;
 	}
-	return $out;
-}
-
-/** Checks Submitted Keys and Variables and Returns Valid Pairs
- * Only allows integers or integers in string type
- * @param array $in
- * @return array
- */
-function vstm_filter_int_strict_array ($in) {
-	$out = array();
-	if (!empty($in)) foreach ($in as $key => $value) {
-		if ((is_int($key) || ctype_digit($key)) && (is_int($value) || ctype_digit($value))) {
-			$out[$key] = (int)$value;
-		}
-	}
-	return $out;
-}
-
-/** Removes Everything Except Numbers, +, - & . and Returns the Float Value
- * Anything after a second . is removed
- * @param string $in
- * @param float $default
- * @return float
- */
-function vstm_filter_float ($in, $default=null) {
-	$out = filter_var($in, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-
-	if (0.0 != $out && empty($out))
-		return $default;
-
-	return (float)$out;
-}
-
-/** Gets and Cleans a Variable to Boolean
- * Returns TRUE for 1, "1", "true", "on" and "yes" . Returns FALSE for 0, "0", "false", "off" and "no".
- * @param string $in
- * @param string $default
- * @return string|null
- */
-function vstm_filter_boolean ($in, $default = null) {
-	$out = filter_var($in, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-	if (null === $out)
-		return $default;
-
 	return $out;
 }

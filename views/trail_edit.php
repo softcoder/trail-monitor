@@ -7,11 +7,19 @@
  * @copyright		(c) 2025, VSoft Solutions
  * @created			22/04/2025
 */
-?><br>
+?>
+<?php 
+if (!defined('ABSPATH')) {
+    exit;
+}
+?>
+<br>
 <div class="wrap <?php	if (is_admin()) echo 'vstm_adminmain'; else echo 'wp-core-ui'; ?>">
 	<h2>Trail Update | <?php if (!empty($record['trail_id'])) echo "Edit"; else echo "Add"; ?> Status</h2>
 	<?php echo wp_kses_post(vstm_display_messages($message_list)) ?>
 <?php
+    wp_enqueue_script( 'vstm-trail-edit-script', plugins_url('../public/js/trail_edit.js', __FILE__), array(), VSTM_VER, true);
+
 	// ***** Load Models, Helpers and Libraries *****
 	require_once(VSTM_ROOT_PATH . 'models/status_model.php');
 	$vstm_Status_Model = new vstm_Status_Model();
@@ -19,7 +27,7 @@
 	// ***** Get Data *****
 	$status_list = $vstm_Status_Model->get_list();
 ?>
-	<form name="form1" method="post" class="vstm_form1" style="display: inline-block; max-width: 550px;" onsubmit="return verifyRecaptchaNotEmpty()" enctype="multipart/form-data">
+	<form name="form1" id="form1" method="post" class="vstm_form1" style="display: inline-block; max-width: 550px;" onsubmit="return verifyRecaptchaNotEmpty()" enctype="multipart/form-data">
 
 <?php if (empty($record['trail_id'])) wp_nonce_field('trail_add'); else wp_nonce_field('trail_edit_' . $record['trail_id']); ?>
 <?php if (!empty($record['trail_id'])) { ?>
@@ -28,7 +36,7 @@
 		<input type="hidden" id="image_id" name="image_id" value="<?php echo esc_html($record['image_id']) ?>">
 		<p>
 			<label>*Trail Name:</label>
-			<input type="text" name="trail_name" id="trail_name" maxlength="<?php echo esc_html(MAX_FIELD_LENGTH_NAME) ?>" value="<?php echo esc_html($record['name']) ?>" list="trailName" required="required">
+			<input type="text" name="trail_name" id="trail_name" maxlength="<?php echo esc_html(VSTM_MAX_FIELD_LENGTH_NAME) ?>" value="<?php echo esc_html($record['name']) ?>" list="trailName" required="required">
 			<datalist id="trailName">
 <?php
 			$options = get_option( 'vstm_options' );
@@ -56,17 +64,17 @@
 		</p>
 		<p>
 			<label>Trail Detail Link:</label>
-			<input type="text" name="link" id="link" maxlength="<?php echo esc_html(MAX_FIELD_LENGTH_LINK) ?>" value="<?php echo esc_html($record['link']) ?>">
+			<input type="text" name="link" id="link" maxlength="<?php echo esc_html(VSTM_MAX_FIELD_LENGTH_LINK) ?>" value="<?php echo esc_html($record['link']) ?>">
 		</p>
 		<p>
 			You may embed youtube videos in the comment using the format below:<br>
-			[trail-status-youtube width="300" height="300" src="https://youtu.be/E8x8VqCPn5g"]<br><br>
+			[vstm-trail-status-youtube width="300" height="300" src="https://youtu.be/E8x8VqCPn5g"]<br><br>
 			<label>Comment:</label>
-			<textarea name="comment" maxlength="<?php echo esc_attr(MAX_FIELD_LENGTH_COMMENT) ?>"><?php echo esc_textarea($record['comment']) ?></textarea>
+			<textarea name="comment" maxlength="<?php echo esc_attr(VSTM_MAX_FIELD_LENGTH_COMMENT) ?>"><?php echo esc_textarea($record['comment']) ?></textarea>
 		</p>		
 		<p>
 			<label>Submitter (Your Name):</label>
-			<input type="text" name="submitter_name" maxlength="<?php echo esc_html(MAX_FIELD_LENGTH_SUBMITTER) ?>" value="<?php echo esc_html($record['submitter_name']) ?>">
+			<input type="text" name="submitter_name" maxlength="<?php echo esc_html(VSTM_MAX_FIELD_LENGTH_SUBMITTER) ?>" value="<?php echo esc_html($record['submitter_name']) ?>">
 		</p>		
 		<p>
 			<label>Recent Photo:</label>
@@ -127,41 +135,14 @@
 			<input type="submit" class="button-primary" value="Save" id="submit-button" name="submit-button">
 <?php	if (is_admin()) { ?>
 			<a href="admin.php?page=trail-status-2-list" class='button-primary' style="margin-left: 17px;">Back to List</a>
-<?php	} ?>		
+<?php	} ?>
 		</p>
-
-		<script>
+<?php
 		// When user selects a trail name, auto populate the link to that trail if the link field is blank
-		document.getElementById('trail_name').addEventListener('input', function () {
-			//debugger;
-			const inputValue = this.value;
-			const datalistId = this.getAttribute('list');
-			const selectedOption = document.querySelector(`#${datalistId} option[value="${inputValue}"]`);
-			if (selectedOption) {
-				const itemUrl = selectedOption.attributes.trailurl.value;
-				//console.log('Selected Item URL:', itemUrl);
-				if(document.getElementById('link').value == "") {
-					document.getElementById('link').value = itemUrl;
-				}
-			} else {
-				console.log('No matching item found.');
-			}
-		});
-
-		// When user selects a photo, show the size of the file
-		var image_upload_file = document.getElementById('image_upload');
-		if(image_upload_file !== 'undefined') {
-			image_upload_file.addEventListener('change', function (event) {
-				//debugger;
-				var file_size = image_upload_file.files[0].size;
-				if(file_size > 0) {
-					file_size = (file_size / 1024 / 1024).toFixed(2);
-				}
-				document.getElementById('image_upload_size').textContent = 'Selected photo file size:' + file_size + ' MB';
-			});
-		}
-
-		</script>
+		wp_add_inline_script( 'vstm-trail-edit-script', 'autoPopulateTrailLink()' );
+		wp_add_inline_script( 'vstm-trail-edit-script', 'checkImageUploadeSize()' );
+?>		
+		
 
 <?php   if (!is_admin()) {
 			$options = get_option( 'vstm_options' );
@@ -170,24 +151,6 @@
 				<div class="g-recaptcha" data-sitekey="<?php echo esc_html($site_key) ?>"></div>
 <?php		}
 		} ?>
-
-		<script>
-		function verifyRecaptchaNotEmpty() {
-			if (typeof grecaptcha !== 'undefined') {
-				var response = grecaptcha.getResponse();
-				if(response.length == 0) {
-					//reCaptcha not entered
-					alert('Please fill out the anti spam field, before submitting!');
-					return false;
-				}
-				else {
-					//reCaptch entered
-					return true;
-				}
-			}
-			return true;
-		}
-		</script>
 
 	</form>
 

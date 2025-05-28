@@ -8,10 +8,10 @@
  * @created			22/04/2025
  */
 
-if ( ! function_exists( 'vtsm_show_multiple_version_notice' ) ) {
-	function vtsm_show_multiple_version_notice() {
+if ( ! function_exists( 'vstm_show_multiple_version_notice' ) ) {
+	function vstm_show_multiple_version_notice() {
 		echo '<div class="error"><p>' . esc_html(__( 'Multiple versions of Trail Monitor are active. Please disable all extra versions of Trail Monitor.','vstm-trail-monitor' )) . '</p></div>';
 	}
 
-	add_action( 'all_admin_notices', 'vtsm_show_multiple_version_notice' );
+	add_action( 'all_admin_notices', 'vstm_show_multiple_version_notice' );
 }

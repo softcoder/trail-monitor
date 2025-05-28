@@ -11,30 +11,30 @@ class vstm_Status_Model {
 
 	/** Returns the full list of statuses
 	 * @global wpdb $wpdb
-	 * @global string $table_statuses
+	 * @global string $vstm_table_statuses
 	 * @return array
 	 */
 	function get_list () {
-		global $wpdb, $table_statuses;
+		global $wpdb, $vstm_table_statuses;
 
 		return stripslashes_deep($wpdb->get_results($wpdb->prepare(
 			"SELECT * FROM %i",
-			$table_statuses
+			$vstm_table_statuses
 		), ARRAY_A));
 	}	
 
 	/** Adds a status
 	 * @global wpdb $wpdb
-	 * @global string $table_statuses
+	 * @global string $vstm_table_statuses
 	 * @param string $name
 	 * @param string $sort_order
 	 * @param string $color
 	 * @return boolean
 	 */
 	function add ($name, $sort_order, $color) {
-		global $wpdb, $table_statuses;
+		global $wpdb, $vstm_table_statuses;
 		$result = $wpdb->insert(
-				$table_statuses,
+				$vstm_table_statuses,
 				['name'=>$name, 'sort_order'=>$sort_order, 'color'=>$color],
 				['%s', '%d', '%s']
 		);
@@ -47,7 +47,7 @@ class vstm_Status_Model {
 
 	/** Updates a status record
 	 * @global wpdb $wpdb
-	 * @global string $table_statuses
+	 * @global string $vstm_table_statuses
 	 * @param int $status_id
 	 * @param string $name
 	 * @param string $sort_order
@@ -55,9 +55,9 @@ class vstm_Status_Model {
 	 * @return boolean
 	 */
 	function update ($status_id, $name, $sort_order, $color) {
-		global $wpdb, $table_statuses;
+		global $wpdb, $vstm_table_statuses;
 		$result = $wpdb->update(
-				$table_statuses,
+				$vstm_table_statuses,
 				['name'=>$name, 'sort_order'=>$sort_order, 'color'=>$color],
 				['status_id'=>$status_id],
 				['%s', '%d', '%s'],
@@ -75,8 +75,8 @@ class vstm_Status_Model {
 	 * @param int $id
 	 */
 	function delete ($id) {
-		global $wpdb, $table_statuses;
-		return $wpdb->delete($table_statuses, ['status_id'=>$id], ['%d']);
+		global $wpdb, $vstm_table_statuses;
+		return $wpdb->delete($vstm_table_statuses, ['status_id'=>$id], ['%d']);
 	}
 
 }

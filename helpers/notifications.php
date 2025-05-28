@@ -12,11 +12,11 @@
  *   (such as needing to approve submitted trail status updates)
  *   @param string $msg - The message body to send
  *   @param string $subject - The subject of the message
- *   @param string $daily_check_option - The name of the wordpress setting to extract the last send date from
+ *   @param string $daily_check_option - The name of the WordPress setting to extract the last send date from
  *                 (if this is specified we compare todays date to when this notification was last sent
  *                  and only send a notification 1 time per day, if null we send every time)
  */
-function sendNotification($msg, $subject, $daily_check_option=null) {
+function vstm_sendNotification($msg, $subject, $daily_check_option=null) {
 	$options = get_option( 'vstm_options' );
 	$email_recipient = isset( $options[ 'vstm_notifications_email_send_to' ] ) ? $options[ 'vstm_notifications_email_send_to' ] : '';
 	if( !empty($email_recipient)) {
@@ -38,7 +38,7 @@ function sendNotification($msg, $subject, $daily_check_option=null) {
                 update_option($daily_check_option, $todays_date);
             }
             else {
-                error_log("VSTM-Plugin sendNotification FAILED to [$to] msg [$msg]");
+                error_log("VSTM-Plugin vstm_sendNotification FAILED to [$to] msg [$msg]");
             }
         }
     }

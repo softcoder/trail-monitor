@@ -1,5 +1,5 @@
 <?php
-/** List View
+/** Update Trail Statuses
  * @Package: 		com.vsoft.trailmonitor
  * @File			view/update.php
  * @Author			VSoft Solutions
@@ -8,13 +8,15 @@
  * @created			22/04/2025
 */
 ?>
-<script>
-	jQuery(function() {
-		jQuery(".vstm_trail_status").checkboxradio({
-			icon: false
-		 });
-	});
-</script>
+
+<?php 
+	if (!defined('ABSPATH')) {
+		exit;
+	}
+
+	wp_enqueue_script( 'vstm-update-script', plugins_url('/update.js', __FILE__), array(), VSTM_VER, true); 
+?>
+
 <div class="wrap vstm_adminmain">
 	<h2>Trail Status | Update Status</h2>
 	<?php echo wp_kses_post(vstm_display_messages($message_list)) ?>

@@ -47,11 +47,15 @@ function vstm_yes_no_select ($name, $default) {
  * @param boolean $value
  * @return string
  */
-function vstm_display_yes_no ($value) {
-	if ($value)
-		return '<span style="color: green">Yes</span>';
-	else
+function vstm_display_yes_no ($value, $singlequote=null) {
+	if ($value) {
+		if($singlequote == null)
+			return '<span style="color: green">Yes</span>';
+		return "<span style='color: green'>Yes</span>";
+	}
+	if($singlequote == null)
 		return '<span style="color: red">No</span>';
+	return "<span style='color: red'>No</span>";
 }
 
 /** Takes Messages and Displays Them

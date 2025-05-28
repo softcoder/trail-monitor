@@ -8,10 +8,13 @@
  * @created			22/04/2025
 */
 ?>
-<script>
-jQuery(document).ready(function () {
-	var tableData = [
 <?php 
+		if (!defined('ABSPATH')) {
+			exit;
+		}
+
+		wp_enqueue_script( 'vstm-trail-list-script', plugins_url('/trail_list.js', __FILE__), array(), VSTM_VER, true);
+
 		// ***** Load Models, Helpers and Libraries *****
 		require_once(VSTM_ROOT_PATH . 'models/status_model.php');
 		$vstm_Status_Model = new vstm_Status_Model();
@@ -36,36 +39,27 @@ jQuery(document).ready(function () {
 			if($record['hidden']) {
 				$trail_unapproved_count++;
 			}
-?> 
-		[
-			'<input type="checkbox" name="bulk_action_list[]" value="<?php echo esc_html($record['trail_id']) ?>" class="vstm_list_checkbox">',
-			'<a href="admin.php?page=trail-status-2-edit&trail=<?php echo esc_html($record['trail_id']) ?>" class="row-title"><?php echo esc_html($record['name']) ?></a>',
-			'<?php if (!empty($record['visitdate'])) { ?><?php echo esc_html(gmdate("Y-m-d", strtotime($record['visitdate']))) ?><?php } ?>',
-			'<?php if (!empty($record['created'])) { ?><?php echo esc_html(gmdate("Y-m-d", strtotime($record['created']))) ?><?php } ?>',
-			'<?php if (!empty($record['link'])) { ?><a href="<?php echo esc_url($record['link']) ?>" target="_blank">Visit Website</a><?php } ?>',
-			'<?php if (!empty($record['comment'])) { ?><p><?php echo esc_js($comment) ?></p><?php } ?>',
-			'<?php if (!empty($record['submitter_name'])) { ?><?php echo esc_html($record['submitter_name']) ?><?php } ?>',
-			'<?php if (!empty($record['image_id'])) { ?><img src="<?php echo esc_url(wp_get_attachment_thumb_url($record['image_id'])) ?>" style="width: 33px; height: 33px;"> <?php } ?>',	
-			'<?php echo esc_html($status_name) ?>',
-			'<?php echo wp_kses_post(vstm_display_yes_no(!$record['hidden'])) ?>',
-			'<?php echo esc_html($record['sort_order']) ?>',
-			'<?php echo wp_kses_post(vstm_display_yes_no($record['show_widget'])) ?>',
-			'<?php echo wp_kses_post(vstm_display_yes_no($record['show_shortcode'])) ?>'
-		],
-<?php } ?>
-	];
-    jQuery("#table").DataTable( {
-		data: tableData,
-		autoWidth: false,
-		pageLength: 25,
-		stateSave: true,
-		columnDefs: [ 
-			{orderable: false, targets: [0, 5]}
-		],
-		order: [[1, "asc"]]
-	});
-});
-</script>
+
+			wp_add_inline_script( 'vstm-trail-list-script', 'addTableData("' .
+					esc_html($record['trail_id']) . '", "' . 
+					esc_html($record['name'])     .	'", "' . 
+					esc_html(gmdate("Y-m-d", strtotime($record['visitdate']))) . '", "' .
+					esc_html(gmdate("Y-m-d", strtotime($record['created'])))   . '", "' . 
+					esc_url($record['link'])            . '", "' .
+					esc_js($comment)                    . '", "' .
+					esc_html($record['submitter_name']) . '", "' . 
+					esc_url(wp_get_attachment_thumb_url($record['image_id'])) . '", "' .
+					esc_html($status_name)                                    . '", "' .
+					vstm_display_yes_no(!$record['hidden'],true)     . '", "' . 
+					esc_html($record['sort_order'])                           . '", "' .
+					vstm_display_yes_no($record['show_widget'],true) . '", "' .
+					vstm_display_yes_no($record['show_shortcode'],true) .
+				'");' );
+        } 
+
+		wp_add_inline_script( 'vstm-trail-list-script', 'buildTableData();');
+		?>
+
 <div class="wrap">
 	<h2>Trail Status | List &nbsp; <a href="admin.php?page=trail-status-2-add" class="add-new-h2">Add New</a> &nbsp; <a href="admin.php?page=trail-status-2-list" class="add-new-h2">Refresh</a></h2>
 	<?php echo esc_html(vstm_display_messages($message_list)) ?>

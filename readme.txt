@@ -4,8 +4,8 @@ Donate link: https://hiking.princegeorge.tech/software/trail-monitor-wordpress-p
 Tags: trail, trails, outdoors, hiking, status
 Requires at least: 6.2
 Tested up to: 6.8
-Requires PHP: 5.6
-Stable tag: 1.2
+Requires PHP: 8.2
+Stable tag: 1.4
 License: GPLv3
 
 Display the status of trails on your website.
@@ -46,11 +46,11 @@ Send Notifications 'from' Email Address: Optional email address to send notifica
 Send Notifications 'to' Email Address: Optional email address to send notifications. (currently one email per day is sent if at least 1 trail status has been submitted on that day. The wordpress 'admin' email is used as the 'from' sender email address)
 
 = Shortcode Usage =
-Trail List Shortcode: [trail-status]
-Trail Blocks Shortcode: [trail-status-blocks]
-Trail Table List Shortcode: [trail-status-list]
-Add Trail Status Shortcode: [trail-status-submit]
-Embed Youtube video Shortcode: [trail-status-youtube]
+Trail List Shortcode: [vstm-trail-status]
+Trail Blocks Shortcode: [vstm-trail-status-blocks]
+Trail Table List Shortcode: [vstm-trail-status-list]
+Add Trail Status Shortcode: [vstm-trail-status-submit]
+Embed Youtube video Shortcode: [vstm-trail-status-youtube]
 
 = Options =
 show_images: Show's the trail image. Trails without an image will get a placeholder image. (default: yes)
@@ -60,12 +60,12 @@ small_images: If yes, the max-width of the trail images will be 50px. If no, the
 border: If yes, the table list will show a border. (default: no)
 
 = Examples =
-[trail-status]
-[trail-status show_images="yes" color_text="no" box_shadow="yes" small_images="yes"]
-[trail-status-blocks show_images="yes" color_text="yes" box_shadow="no" small_images="no"]
-[trail-status-list show_images="yes" color_text="no" box_shadow="yes" small_images="yes" border="no"]
-[trail-status-submit]
-[trail-status-youtube width="300" height="300" src="https://youtu.be/E8x8VqCPn5g"]
+[vstm-trail-status]
+[vstm-trail-status show_images="yes" color_text="no" box_shadow="yes" small_images="yes"]
+[vstm-trail-status-blocks show_images="yes" color_text="yes" box_shadow="no" small_images="no"]
+[vstm-trail-status-list show_images="yes" color_text="no" box_shadow="yes" small_images="yes" border="no"]
+[vstm-trail-status-submit]
+[vstm-trail-status-youtube width="300" height="300" src="https://youtu.be/E8x8VqCPn5g"]
 
 = Features =
 Trail Statuses may be submitted by unregistered users with optional photo preview, but are unapproved until reviewed by an admin
@@ -74,6 +74,14 @@ Filters to show unapproved trail status submissions
 Ability to bulk update trail statuses
 Ability to link trail status updates with wordpress posts containing a specified psot category
 Optional anti-spam google recaptcha integration
+
+== External services ==
+
+This plugin connects to a Google API to protect trail updates from spam attacks, it's needed to provide anti-spam detection in the plugin.
+
+It sends a unique key every time the widget is loaded.
+This service is provided by "Google": terms of use, privacy policy.
+https://developers.google.com/recaptcha/docs/faq
 
 == Screenshots ==
 
